@@ -1,0 +1,6 @@
+
+npm create vite@latest
+cd <nome>
+npm i
+npm install vue-router@4
+npm install firebase
