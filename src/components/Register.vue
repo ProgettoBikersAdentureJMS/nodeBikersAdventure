@@ -1,5 +1,8 @@
 <template>
-    <div id="register">
+    <form id="register" @submit.prevent="register">
+        <input type="text" placeholder="Nome utente" v-model="username" required>
+        <br>
+        <br>
         <input type="email" placeholder="E-Mail" v-model="email" required>
         <br>
         <br>
@@ -8,18 +11,20 @@
         <br>
         <p id="error" v-if="errorMsg"> {{ errorMsg }} </p>
         <br>
-        <button @click="register">ISCRIVITI</button>
+        <input type="submit" value="ISCRIVITI">
         <br>
         <p>Hai già un account?&nbsp;<a href="/login">Accedi</a></p>
-    </div>
+    </form>
 </template>
 
 <script>
     import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"
+    import { getFirestore, doc, setDoc } from "firebase/firestore"
 
     export default {
         data() {
             return {
+                username: "",
                 email: "",
                 password: "",
                 errorMsg: ""
@@ -61,7 +66,20 @@
             register() {
                 if (this.checkPasswordComplexity()) {
                     createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+                    .then(user => {
+                        const path = "utenti/" + this.username
+                        const userPath = doc(getFirestore(), path)
+                        const userData = {
+                            username: this.username,
+                            email: user.user.email
+                        }
+
+                        setDoc(userPath, userData)
+
+                        this.$router.push("/login")
+                    })
                     .catch((error) => {
+                        console.log(error)
                         switch (error.code) {
                             case "auth/email-already-in-use":
                                 this.errorMsg = "L'utente esiste già"
@@ -96,7 +114,7 @@
         text-align: left;
     }
 
-    #register button {
+    #register input[type="submit"] {
         margin-bottom: 20px;
         height: 4vh;
         width: 100%;

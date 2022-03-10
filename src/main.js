@@ -6,8 +6,9 @@ import OpenLayersMap from 'vue3-openlayers'
 import 'vue3-openlayers/dist/vue3-openlayers.css'
 
 // Firebase
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app"
+import { getAnalytics } from "firebase/analytics"
+import { getFirestore } from "firebase/firestore"
 
 // Views
 import App from './App.vue'
@@ -17,6 +18,7 @@ import Journeys from './views/Journeys.vue'
 import Register from './views/Register.vue'
 import Login from './views/Login.vue'
 import Profile from './views/Profile.vue'
+import Subscriptions from './views/Subscriptions.vue'
 
 // Routing config
 const router = createRouter({
@@ -27,7 +29,8 @@ const router = createRouter({
         {path: '/journeys', name: 'Journeys', component: Journeys},
         {path: '/register', name: 'Register', component: Register},
         {path: '/login', name: 'Login', component: Login},
-        {path: '/profile', name: 'Profile', component: Profile}
+        {path: '/profile', name: 'Profile', component: Profile},
+        {path: '/subscriptions', name: 'subscriptions', component: Subscriptions}
     ]
 })
 
@@ -40,10 +43,11 @@ const firebaseConfig = {
   messagingSenderId: "1076087557127",
   appId: "1:1076087557127:web:a2ee2b1a88ba6ceb8c2ea2",
   measurementId: "G-T9BVL2S79H"
-};
+}
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const app = initializeApp(firebaseConfig)
+const analytics = getAnalytics(app)
+const firestore = getFirestore()
 
 createApp(App)
 .use(router)

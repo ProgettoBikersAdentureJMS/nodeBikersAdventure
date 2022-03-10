@@ -1,5 +1,5 @@
 <template>
-    <div id="login">
+    <form id="login" @submit.prevent="login">
         <input type="text" placeholder="E-Mail" v-model="email" required>
         <br>
         <br>
@@ -8,10 +8,10 @@
         <br>
         <p id="error" v-if="errorMsg"> {{ errorMsg }} </p>
         <br>
-        <button @click="login">ACCEDI</button>
+        <input type="submit" value="ACCEDI">
         <br>
         <p>Non hai ancora un account?&nbsp;<a href="/register">Registrati</a></p>
-    </div>
+    </form>
 </template>
 
 <script>
@@ -29,19 +29,18 @@
             login() {
                 signInWithEmailAndPassword(getAuth(), this.email, this.password)
                 .then(() => {
-                    this.$router.push("/");
+                    this.$router.push("/")
                 })
                 .catch((error) => {
-                    console.log(error)
                     switch (error.code) {
                         case "auth/invalid-email":
-                            errorMsg = "E-Mail non corretta"
+                            this.errorMsg = "E-Mail non corretta"
                             break
                         case "auth/user-not-found":
-                            errorMsg = "Questo utente non esiste"
+                            this.errorMsg = "Questo utente non esiste"
                             break
                         case "auth/wrong-password":
-                            errorMsg = "Password non corretta"
+                            this.errorMsg = "Password non corretta"
                             break
                     }
                 })
@@ -66,7 +65,7 @@
         border-bottom: 1px solid rgba(255, 68, 0, 0.906);
     }
 
-    #login button {
+    #login input[type="submit"] {
         margin-bottom: 20px;
         height: 4vh;
         width: 100%;

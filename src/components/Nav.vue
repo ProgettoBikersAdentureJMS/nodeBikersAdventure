@@ -6,6 +6,7 @@
             <a href="/journeys">Tragitti</a>
         </div>
         <div id="right">
+            <a href="/subscriptions">Le mie iscrizioni</a>
             <a href="/groups">Gruppi</a>
             <a href="/login">Accedi</a>
             <a href="/profile">Profilo</a>

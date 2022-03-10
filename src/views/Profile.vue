@@ -1,31 +1,102 @@
 <template>
     <div>
         <h1>Profile</h1>
-        <button @click="confirmEmail">Email</button>
-        <p v-if="email"> {{ email }} </p>
-        <p v-if="verifiedMail"> {{ verifiedMail ? "verificato" : "non verificato" }} </p>
+        <button @click="getData">Data</button>
+        <p>E-Mail: {{ email }}</p>
+        <button @click="logOut">ESCI</button>
+        <hr>
+        <h3>Modifica email</h3>
+        <form id="changePassword" @submit.prevent="changePassword">
+            <input type="text" v-model="oldEmail" placeholder="Vecchia email" required>
+            <br>
+            <br>
+            <input type="text" v-model="newEmail" placeholder="Nuova email" required>
+            <br>
+            <br>
+            <input type="submit" value="MODIFICA">
+            <br>
+            <p v-if="errMsg" id="error">{{ errMsg }}</p>
+        </form>
     </div>
 </template>
 
 <script>
-    import { getAuth, sendEmailVerification } from "firebase/auth"
+    import { getAuth, updateEmail } from "firebase/auth"
 
     export default {
         data() {
             return {
-                email: getAuth().currentUser.email,
-                verifiedMail: getAuth().currentUser.emailVerified
+                email: "",
+                oldEmail: "",
+                newEmail: "",
+                errMsg: ""
             }
         },
-
         methods: {
-            confirmEmail() {
-                console.log(getAuth().currentUser)
-                sendEmailVerification(getAuth().currentUser)
+            getData() {
+                if (getAuth().currentUser != null) {
+                    this.email = getAuth().currentUser.email
+                }
+            },
+            logOut() {
+                getAuth().signOut()
                 .then(() => {
-                    console.log("email")
+                    this.$router.push("/")
                 })
+            },
+            changePassword() {
+                if (this.oldEmail == this.email) {
+                    if (this.oldEmail != this.newEmail) {
+                        updateEmail(getAuth(), this.newEmail)
+                        .then()
+                        .catch(error => {
+                            console.log(error)
+                        })       
+                    } else {
+                        this.errMsg = "La nuova email deve essere diversa dalla vecchia"
+                    }
+                } else {
+                    this.errMsg = "La vecchia email non corrisponde a quella attuale"
+                }
             }
         }
     }
 </script>
+
+<style>
+    button {
+        margin-bottom: 20px;
+        height: 4vh;
+        width: 15vh;
+        background: rgba(255, 68, 0, 0.906);
+        color: white;
+        border: 0;
+    }
+
+    #changePassword {
+        margin: auto;
+        width: fit-content;
+        padding: 20px;
+    }
+
+    input{
+        width: 100%;
+        height: 3vh;
+        border: 0;
+        border-bottom: 1px solid rgba(255, 68, 0, 0.906);
+    }
+
+    input[type="submit"] {
+        margin-bottom: 20px;
+        height: 4vh;
+        width: 100%;
+        background: rgba(255, 68, 0, 0.906);
+        color: white;
+        border: 0;
+    }
+
+
+    #error {
+        color: red;
+    }
+</style>
