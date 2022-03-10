@@ -1,16 +1,19 @@
 <template>
     <div>
         <h1>Events</h1>
-	    <EventsList :events="eventsList" />
+	    <!--<EventsList :events="eventsList" />-->
+		<CreateEvent />
     </div>
 </template>
 
 <script>
 	import EventsList from '../components/EventsList.vue'
+	import CreateEvent from '../components/CreateEvent.vue'
 
 	export default {
 		components: {
-			EventsList
+			EventsList,
+			CreateEvent
 		},
 		data() {
 			return {

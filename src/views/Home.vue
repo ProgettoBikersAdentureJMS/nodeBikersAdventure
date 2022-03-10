@@ -1,38 +1,38 @@
 <template>
-<ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height:90vh">
-    <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
-    :projection="projection" />
-    <ol-tile-layer>
-        <ol-source-osm />
-    </ol-tile-layer>
+    <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height:90vh">
+        <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
+        :projection="projection" />
+        <ol-tile-layer>
+            <ol-source-osm />
+        </ol-tile-layer>
 
-    <ol-geolocation :projection="projection">
-        <ol-vector-layer :zIndex="2">
+        <ol-geolocation :projection="projection">
+            <ol-vector-layer :zIndex="2">
+                <ol-source-vector>
+                    <ol-feature ref="positionFeature">
+                        <ol-geom-point :coordinates="center"></ol-geom-point>
+                        <ol-style>
+                            <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                        </ol-style>
+                    </ol-feature>
+                </ol-source-vector>
+            </ol-vector-layer>
+        </ol-geolocation>
+
+        <ol-vector-layer>
             <ol-source-vector>
-                <ol-feature ref="positionFeature">
-                    <ol-geom-point :coordinates="center"></ol-geom-point>
+                <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
+                    <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
                     <ol-style>
-                        <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                        <ol-style-circle :radius="event.followers / 25">
+                            <ol-style-fill :color="fillColor"></ol-style-fill>
+                            <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
+                        </ol-style-circle>
                     </ol-style>
                 </ol-feature>
             </ol-source-vector>
         </ol-vector-layer>
-    </ol-geolocation>
-
-    <ol-vector-layer>
-        <ol-source-vector>
-            <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
-                <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
-                <ol-style>
-                    <ol-style-circle :radius="event.followers / 25">
-                        <ol-style-fill :color="fillColor"></ol-style-fill>
-                        <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
-                    </ol-style-circle>
-                </ol-style>
-            </ol-feature>
-        </ol-source-vector>
-    </ol-vector-layer>
-</ol-map>
+    </ol-map>
 </template>
 
 <script>
