@@ -5,7 +5,7 @@
             <p>Inizia: {{ formatDate(start) }}</p>
             <p>Termina: {{ formatDate(end) }} </p>
             <br>
-            <button @click="takePart()">TAKE PART</button>
+            <button @click="takePart">TAKE PART</button>
         </div>
     </div>
 </template>

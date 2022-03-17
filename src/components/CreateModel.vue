@@ -1,64 +1,66 @@
 <template>
-    <button @click="enableSelect(1)">Punto di partenza</button>
-    <button @click="enableSelect(2)">Punto di arrivo</button>
-    <button @click="enableSelect(3)">Tappe intermedie</button>
-    <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
-        <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
-            :projection="projection" />
-        <ol-tile-layer>
-            <ol-source-osm />
-        </ol-tile-layer>
-
-        <ol-vector-layer>
-            <ol-source-vector>
-                <ol-interaction-draw v-if="selectPointStart" :type="drawType" @drawstart="drawStart($event)">
-                </ol-interaction-draw>
-            </ol-source-vector>
-
-            <ol-style>
-                <ol-style-icon :src="start" :scale="0.1"></ol-style-icon>
-            </ol-style>
-        </ol-vector-layer>
-
-        <ol-vector-layer>
-            <ol-source-vector>
-                <ol-interaction-draw v-if="selectPointArrive" :type="drawType" @drawstart="drawStart($event)">
-                </ol-interaction-draw>
-            </ol-source-vector>
-
-            <ol-style>
-                <ol-style-icon :src="arrive" :scale="0.1"></ol-style-icon>
-            </ol-style>
-        </ol-vector-layer>
-
-        <ol-vector-layer>
-            <ol-source-vector>
-                <ol-interaction-draw v-if="selectPointMiddle" :type="drawType" @drawstart="drawStart($event)">
-                </ol-interaction-draw>
-            </ol-source-vector>
-
-            <ol-style>
-                <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
-            </ol-style>
-        </ol-vector-layer>
-    </ol-map>
     <div>
-        <h3>Nome:</h3>
-        <h3>Privato:</h3>
-        <label class="switch">
-            <input type="checkbox" @change="switchPrivacy($event)">
-            <span class="slider round"></span>
-        </label>
-    </div>
-    <div>
-        <input type="text" v-model="name">
-        <div id="password" style="display: none">
-            <input type="password" placeholder="Password" v-model="password">
-            <input type="password" placeholder="Conferma password" v-model="confirmPassword">
-            <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
+        <button @click="enableSelect(1)">Punto di partenza</button>
+        <button @click="enableSelect(2)">Punto di arrivo</button>
+        <button @click="enableSelect(3)">Tappe intermedie</button>
+        <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
+            <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
+                :projection="projection" />
+            <ol-tile-layer>
+                <ol-source-osm />
+            </ol-tile-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-interaction-draw v-if="selectPointStart" :type="drawType" @drawstart="drawStart($event)">
+                    </ol-interaction-draw>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="start" :scale="0.1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-interaction-draw v-if="selectPointArrive" :type="drawType" @drawstart="drawStart($event)">
+                    </ol-interaction-draw>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="arrive" :scale="0.1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-interaction-draw v-if="selectPointMiddle" :type="drawType" @drawstart="drawStart($event)">
+                    </ol-interaction-draw>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+        </ol-map>
+        <div>
+            <h3>Nome:</h3>
+            <h3>Privato:</h3>
+            <label class="switch">
+                <input type="checkbox" @change="switchPrivacy($event)">
+                <span class="slider round"></span>
+            </label>
         </div>
+        <div>
+            <input type="text" v-model="name">
+            <div id="password" style="display: none">
+                <input type="password" placeholder="Password" v-model="password">
+                <input type="password" placeholder="Conferma password" v-model="confirmPassword">
+                <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
+            </div>
+        </div>
+        <button @click="createTemplate">CONFERMA</button>
     </div>
-    <button @click="createTemplate">CONFERMA</button>
 </template>
 
 <script>
