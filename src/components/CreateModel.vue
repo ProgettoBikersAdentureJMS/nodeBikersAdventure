@@ -43,6 +43,7 @@
         </ol-vector-layer>
     </ol-map>
     <div>
+        <h3>Nome:</h3>
         <h3>Privato:</h3>
         <label class="switch">
             <input type="checkbox" @change="switchPrivacy($event)">
@@ -50,11 +51,14 @@
         </label>
     </div>
     <div>
+        <input type="text" v-model="name">
         <div id="password" style="display: none">
             <input type="password" placeholder="Password" v-model="password">
             <input type="password" placeholder="Conferma password" v-model="confirmPassword">
+            <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
         </div>
     </div>
+    <button @click="createTemplate">CONFERMA</button>
 </template>
 
 <script>
@@ -78,12 +82,36 @@
                 positionStart: [0, 0],
                 positionArrive: [0, 0],
                 middlePositions: [],
+                name: "",
+                password: "",
+                confirmPassword: "",
+                errorMsg: "",
                 start,
                 arrive,
                 ping
             }
         },
         methods: {
+            createTemplate() {
+                if (this.password != "") {
+                    if (this.password != this.confirmPassword) {
+                        this.errorMsg = "Le due password sono diverse"
+                        return
+                    }
+                }
+
+                var path = "modelli/" + this.name
+                var modelPath = doc(getFirestore(), path)
+                var modelData = {
+                    nome: this.name,
+                    partenza: this.positionStart,
+                    arrivo: this.positionArrive,
+                    intermedi: this.middlePositions,
+                    password: this.password
+                }
+
+                setDoc(modelPath, modelData)
+            },
             switchPrivacy(event) {
                 if (event.target.checked) {
                     document.getElementById("password").style.display = ""
@@ -122,7 +150,7 @@
                 } else if (this.selectPointArrive) {
                     this.positionArrive = coordsLonLat
                 } else {
-                    this.middlePositions.push(coordsLonLat)
+                    this.middlePositions.push({coordsLonLat})
                 }
             }
         },
@@ -142,6 +170,10 @@
 <style>
     button {
         margin: 20px;
+    }
+
+    #error {
+        color: red;
     }
 
     .switch {
