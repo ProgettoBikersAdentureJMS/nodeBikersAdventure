@@ -2,11 +2,8 @@
     <div id="event">
         <h1>{{ title }}</h1>
         <div>
-            <p> -- map -- </p>
-            <p>{{ description }}</p>
-            <p>{{ meeting }}</p>
-            <p>{{ date }}</p>
-            <p>{{prova.current}}</p>
+            <p>Inizia: {{ formatDate(start) }}</p>
+            <p>Termina: {{ formatDate(end) }} </p>
             <br>
             <button @click="takePart()">TAKE PART</button>
         </div>
@@ -14,44 +11,56 @@
 </template>
 
 <script>
-export default {
-    props: {
-        id: {
-            type: String,
-            default: ""
+    import { getFirestore, doc, updateDoc, collection, getDocs } from "firebase/firestore"
+    import { getAuth } from "firebase/auth"
+
+    export default {
+        props: {
+            title: {
+                type: String,
+                default: ""
+            },
+            start: {
+                type: String,
+                default: ""
+            },
+            end: {
+                type: String,
+                default: ""
+            }
         },
-        title: {
-            type: String,
-            default: ""
+        data() {
+            return {
+                snapshot: getDocs(collection(getFirestore(), "utenti"))
+            }
         },
-        description: {
-            type: String,
-            default: ""
-        },
-        meeting: {
-            type: String,
-            default: ""
-        },
-        date: {
-            type: String,
-            default: ""
-        }
-    },
-    data() {
-        return {
-            prova: {
-                current: "2022",
-                previous: "2021"
+        methods: {
+            takePart() {
+                var currentUserEmail = getAuth().currentUser.email
+                this.snapshot.then(data => {
+                    data.forEach(doc => {
+                        var userData = doc.data()
+                        if (userData.email == currentUserEmail) {
+                            //update doc
+                        }
+                    })
+                })
+            },
+            formatDate(date) {
+                var dateF = new Date(date)
+                var day = this.formatField(dateF.getDay())
+                var month = this.formatField(dateF.getMonth())
+                var year = this.formatField(dateF.getFullYear())
+                var hour = this.formatField(dateF.getHours())
+                var minutes = this.formatField(dateF.getMinutes())
+
+                return day + "." + month  + "." + year + " " + hour + ":" + minutes
+            },
+            formatField(value) {
+                return value < 10 ? "0" + value : value.toString()
             }
         }
-    },
-    methods: {
-        takePart() {
-            // 'this' is used to access props and local variables
-            alert("You have taking part at event " + this.prova.current)
-        }
     }
-}
 </script>
 
 <style>

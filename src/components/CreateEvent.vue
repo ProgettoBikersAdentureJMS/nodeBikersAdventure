@@ -1,17 +1,24 @@
 <template>
     <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
         <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
-        :projection="projection" />
+            :projection="projection" />
         <ol-tile-layer>
             <ol-source-osm />
         </ol-tile-layer>
+
+        <ol-vector-layer v-if="selectPoint">
+            <ol-source-vector :projection="projection">
+                <ol-interaction-draw :type="drawType" @drawstart="drawStart($event)">
+                </ol-interaction-draw>
+            </ol-source-vector>
+
+            <ol-style>
+                <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+            </ol-style>
+        </ol-vector-layer>
     </ol-map>
     <div>
-        <button>Punto di ritrovo</button>
-        <!--<h1>{{ title }}</h1>
-        <h1>{{ start }}</h1>
-        <h1>{{ end }}</h1>
-        <h1>{{ closeSubscriptionDate }}</h1>-->
+        <button @click="enableSelect">Punto di ritrovo</button>
         <div style="margin-left: 20%; margin-right: 20%">
             <div style="width: 50vh; float: left">
                 <div id="title-content">
@@ -44,17 +51,27 @@
 </template>
 
 <script>
+    import ping from "../assets/ping.png"
     import { getFirestore, doc, setDoc } from "firebase/firestore"
+    import { transform } from "ol/proj"
 
     export default {
         data() {
             return {
+                center: [0, 0],
+                projection: 'EPSG:4326',
+                zoom: 16,
+                rotation: 0,
+                drawType: "Point",
                 title: "",
                 start: "",
                 end: "",
                 closeSubscriptionDate: "",
                 password: "",
-                confirmPassword: ""
+                confirmPassword: "",
+                selectPoint: false,
+                position: [0, 0],
+                ping
             }
         },
         methods: {
@@ -74,13 +91,32 @@
                     termine: this.end,
                     chiusura_iscrizione: this.closeSubscriptionDate,
                     password: this.password,
-                    ritrovo: [9.8, 9.5]
+                    ritrovo: this.position
                 }
 
                 setDoc(eventPath, eventData)
 
                 this.$router.push("/")
+            },
+            enableSelect() {
+                this.selectPoint = true
+            },
+            drawStart(event) {
+                // https://openlayers.org/en/latest/apidoc/module-ol_proj.html#.transform
+                var coords = event.feature.getGeometry().getCoordinates()
+                // Trasforma le coordinate in longitudine e latitudine
+                this.position = transform(coords, "EPSG:4326", "EPSG:4326")
             }
+        },
+        mounted() {
+            navigator.geolocation.watchPosition( 
+                position => {
+                    this.center = [position.coords.longitude, position.coords.latitude]
+                },
+                error => { 
+                    console.log(error.message)
+                }
+            )
         }
     }
 </script>
@@ -132,11 +168,11 @@
     }
 
     input:checked + .slider {
-        background-color: #2196F3;
+        background-color: orange;
     }
 
     input:focus + .slider {
-        box-shadow: 0 0 1px #2196F3;
+        box-shadow: 0 0 1px orange;
     }
 
     input:checked + .slider:before {

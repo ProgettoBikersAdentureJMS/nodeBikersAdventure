@@ -2,31 +2,38 @@
     <div>
         <Event v-for="event, itemIndex in events" 
         :key="itemIndex"
-        :title="event.title"
-        :description="event.description"
-        :date="event.date" />
-        <br>
-        <button @click="logEvents">LOG EVENTS</button>
+        :title="event.titolo"
+        :start="event.inizio"
+        :end="event.termine" />
     </div>
 </template>
 
 <script>
+import { collection, getFirestore, getDocs } from '@firebase/firestore'
 import Event from "./Event.vue"
 
 export default {
     components: {
         Event
     },
-    props: {
-        events: {
-            type: Array,
-            default: () => [] // Empty array
+    data() {
+        return {
+            snapshot: getDocs(collection(getFirestore(), "raduni")),
+            events: []
         }
     },
-    methods: {
-        logEvents() {
-            console.log(this.events);
-        }
+    mounted() {
+        this.snapshot.then(data => {
+            data.forEach(doc => {
+                var event = doc.data()
+                var date1 = new Date()
+                var date2 = new Date(event.chiusura_iscrizione)
+
+                if (date2 > date1) {
+                    this.events.push(event)
+                }
+            })
+        })
     }
 }
 </script>
