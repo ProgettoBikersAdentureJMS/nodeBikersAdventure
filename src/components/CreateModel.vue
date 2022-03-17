@@ -11,15 +11,34 @@
 
         <ol-vector-layer>
             <ol-source-vector>
-                <ol-interaction-draw :type="drawType" @drawstart="drawStart($event)">
-
+                <ol-interaction-draw v-if="selectPointStart" :type="drawType" @drawstart="drawStart($event)">
                 </ol-interaction-draw>
             </ol-source-vector>
 
             <ol-style>
-                <ol-style-icon v-if="selectPointStart" :src="ping" :scale="1"></ol-style-icon>
-                <ol-style-icon v-if="selectPointArrive" :src="ping" :scale="1"></ol-style-icon>
-                <ol-style-icon v-if="selectPointMiddle" :src="ping" :scale="1"></ol-style-icon>
+                <ol-style-icon :src="start" :scale="0.1"></ol-style-icon>
+            </ol-style>
+        </ol-vector-layer>
+
+        <ol-vector-layer>
+            <ol-source-vector>
+                <ol-interaction-draw v-if="selectPointArrive" :type="drawType" @drawstart="drawStart($event)">
+                </ol-interaction-draw>
+            </ol-source-vector>
+
+            <ol-style>
+                <ol-style-icon :src="arrive" :scale="0.1"></ol-style-icon>
+            </ol-style>
+        </ol-vector-layer>
+
+        <ol-vector-layer>
+            <ol-source-vector>
+                <ol-interaction-draw v-if="selectPointMiddle" :type="drawType" @drawstart="drawStart($event)">
+                </ol-interaction-draw>
+            </ol-source-vector>
+
+            <ol-style>
+                <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
             </ol-style>
         </ol-vector-layer>
     </ol-map>
@@ -39,7 +58,11 @@
 </template>
 
 <script>
-    
+    import start from "../assets/start.png"
+    import arrive from "../assets/arrive.png"
+    import ping from "../assets/ping.png"
+    import { getFirestore, doc, setDoc } from "firebase/firestore"
+    import { transform } from "ol/proj"
 
     export default {
         data() {
@@ -51,10 +74,13 @@
                 drawType: "Point",
                 selectPointStart: false,
                 selectPointArrive: false,
-                selectedPointMiddle: false,
+                selectPointMiddle: false,
                 positionStart: [0, 0],
                 positionArrive: [0, 0],
-                middlePositions: []
+                middlePositions: [],
+                start,
+                arrive,
+                ping
             }
         },
         methods: {
@@ -65,7 +91,7 @@
                     document.getElementById("password").style.display = "none"
                 }
             },
-            /*enableSelect(id) {
+            enableSelect(id) {
                 switch (id) {
                     case 1:
                         this.selectPointStart = true
@@ -98,7 +124,7 @@
                 } else {
                     this.middlePositions.push(coordsLonLat)
                 }
-            }*/
+            }
         },
         mounted() {
             navigator.geolocation.watchPosition( 
