@@ -1,13 +1,13 @@
 <template>
-    <Subscriptions />
+    <SubscriptionsList />
 </template>
 
 <script>
-    import Subscriptions from "../components/Subscriptions.vue"
+    import SubscriptionsList from "../components/SubscriptionsList.vue"
 
     export default {
         components: {
-            Subscriptions
+            SubscriptionsList
         }
     }
 </script>

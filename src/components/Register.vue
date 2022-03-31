@@ -71,7 +71,9 @@
                         const userPath = doc(getFirestore(), path)
                         const userData = {
                             username: this.username,
-                            email: user.user.email
+                            email: user.user.email,
+                            raduni: [],
+                            tragitti: []
                         }
 
                         setDoc(userPath, userData)

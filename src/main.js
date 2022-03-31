@@ -15,6 +15,7 @@ import App from './App.vue'
 import Home from './views/Home.vue'
 import Events from './views/Events.vue'
 import Journeys from './views/Journeys.vue'
+import Groups from './views/Groups.vue'
 import Register from './views/Register.vue'
 import Login from './views/Login.vue'
 import Profile from './views/Profile.vue'
@@ -27,10 +28,11 @@ const router = createRouter({
         {path: '/', name: 'Home', component: Home},
         {path: '/events', name: 'Events', component: Events},
         {path: '/journeys', name: 'Journeys', component: Journeys},
+        {path: '/subscriptions', name: 'Subscriptions', component: Subscriptions},
+        {path: '/groups', name: 'Gruppi', component: Groups},
         {path: '/register', name: 'Register', component: Register},
         {path: '/login', name: 'Login', component: Login},
-        {path: '/profile', name: 'Profile', component: Profile},
-        {path: '/subscriptions', name: 'subscriptions', component: Subscriptions}
+        {path: '/profile', name: 'Profile', component: Profile}
     ]
 })
 

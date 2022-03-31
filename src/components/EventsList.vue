@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Event v-for="event, itemIndex in events" 
+        <Event v-for="event, itemIndex in events"
         :key="itemIndex"
         :title="event.titolo"
         :start="event.inizio"
