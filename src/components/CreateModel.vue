@@ -151,6 +151,10 @@
                     this.positionStart = coordsLonLat
                 } else if (this.selectPointArrive) {
                     this.positionArrive = coordsLonLat
+
+                    fetch("http://router.project-osrm.org/route/v1/driving/90.4007354,23.7936502;90.3925568,23.7746739?steps=true")
+                        .then(response => response.json())
+                        .then(data => console.log(data))
                 } else {
                     this.middlePositions.push({coordsLonLat})
                 }

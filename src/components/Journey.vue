@@ -48,8 +48,7 @@
                 closeSubscriptionDate: "",
                 password: "",
                 confirmPassword: "",
-                templateId: "",
-                participants: [] //Implementare l'array di partecipanti
+                templateId: ""
             }
         },
         methods: {
@@ -73,7 +72,8 @@
                     arrivo: this.end,
                     chiusura_iscrizione: this.closeSubscriptionDate,
                     password: this.password,
-                    modello_Id: this.templateId
+                    modello_Id: this.templateId,
+                    partecipanti: ["bansam"]
                 }
 
                 setDoc(journeyPath, journeyData)
