@@ -4,6 +4,7 @@
             <a href="/" id="home">BikersAdventure</a>
             <a href="/events">Raduni</a>
             <a href="/journeys">Tragitti</a>
+            <a href="/point">Punto di interesse/pericolo</a>
         </div>
         <div id="right">
             <a href="/subscriptions">Le mie iscrizioni</a>

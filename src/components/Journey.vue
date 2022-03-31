@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ListModels />
+        <ListModels @getTemplate="getTemplate" />
         <div style="margin-left: 20%; margin-right: 20%">
             <div style="width: 50vh; float: left">
                 <div id="title-content">
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+    import { getFirestore, doc, setDoc} from "firebase/firestore"
     import ListModels from "./ListModels.vue"
 
     export default {
@@ -47,12 +48,14 @@
                 closeSubscriptionDate: "",
                 password: "",
                 confirmPassword: "",
-                templateId: ""
+                templateId: "",
+                participants: [] //Implementare l'array di partecipanti
             }
         },
         methods: {
             getTemplate(value) {
                 this.templateId = value
+                console.log(value)
             },
             switchPrivacy(event) {
                 if (event.target.checked) {
@@ -62,7 +65,20 @@
                 }
             },
             organizeJourney() {
+                const path = "tragitti/" + this.title
+                const journeyPath = doc(getFirestore(), path)
+                const journeyData = {
+                    titolo: this.title,
+                    partenza: this.start,
+                    arrivo: this.end,
+                    chiusura_iscrizione: this.closeSubscriptionDate,
+                    password: this.password,
+                    modello_Id: this.templateId
+                }
 
+                setDoc(journeyPath, journeyData)
+
+                this.$router.push("/")
             }
         }
     }
