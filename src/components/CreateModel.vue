@@ -42,6 +42,12 @@
                     <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    
+                </ol-source-vector>
+            </ol-vector-layer>
         </ol-map>
         <div>
             <h3>Nome:</h3>
@@ -69,6 +75,8 @@
     import ping from "../assets/ping.png"
     import { getFirestore, doc, setDoc } from "firebase/firestore"
     import { transform } from "ol/proj"
+    import { Polyline } from "ol/format"
+    import { Feature } from "ol"
 
     export default {
         data() {
@@ -153,8 +161,30 @@
                     this.positionArrive = coordsLonLat
 
                     fetch("http://router.project-osrm.org/route/v1/driving/90.4007354,23.7936502;90.3925568,23.7746739?steps=true")
+                        // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/
                         .then(response => response.json())
-                        .then(data => console.log(data))
+                        .then(data => {
+                            //console.log(data.routes[0].geometry)
+
+                            var geometry = data.routes[0].geometry
+                            var format = new Polyline()
+                            
+                            var line = format.readGeometry(geometry, {
+                                dataProjection: 'EPSG:4326',
+                                featureProjection: 'EPSG:900913'
+                            })
+
+                            console.log(line)
+
+
+
+
+
+
+
+
+
+                        })
                 } else {
                     this.middlePositions.push({coordsLonLat})
                 }
