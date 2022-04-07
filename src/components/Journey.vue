@@ -67,6 +67,7 @@
                 }
             },
             organizeJourney() {
+<<<<<<< HEAD
                 //controllo vari errori
                 //se non sono stati inseriti nome o descrizione
                 if(this.title === ""){
@@ -96,13 +97,22 @@
                 const path = "tragitti/" + this.title
                 const journeyPath = doc(getFirestore(), path)
 
+=======
+                const path = "tragitti/" + this.title
+                const journeyPath = doc(getFirestore(), path)
+>>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                 const journeyData = {
                     titolo: this.title,
                     partenza: this.start,
                     arrivo: this.end,
                     chiusura_iscrizione: this.closeSubscriptionDate,
                     password: this.password,
+<<<<<<< HEAD
                     modello_Id: this.templateId
+=======
+                    modello_Id: this.templateId,
+                    partecipanti: ["bansam"]
+>>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                 }
 
                 setDoc(journeyPath, journeyData)

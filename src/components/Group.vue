@@ -1,8 +1,11 @@
 <template>
-    <div id="group">
-        <img :src="image">
-        <p><b>{{ name }}</b></p>
-        <button>Ulteriori informazioni</button>
+    <div>
+        <div id="group">
+            <img :src="image">
+            <p><b>{{ name }}</b></p>
+            <button @click="getName">Ulteriori informazioni</button>
+        </div>
+        <br>
     </div>
 </template>
 
@@ -17,6 +20,11 @@
                 type: String,
                 default: ""
             }
+        },
+        methods: {
+            getName() {
+                this.$emit("getName", this.name)
+            }
         }
     }
 </script>
@@ -27,8 +35,9 @@
         border: 1px solid black;
         padding-left: 20px;
         padding-right: 20px;
-        margin-left: 20px;
-        margin-right: 20px;
+        width: 80%;
+        margin-left: 10%;
+        margin-right: 10%;
     }
 
     #group img {
