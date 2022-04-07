@@ -20,6 +20,7 @@ import Register from './views/Register.vue'
 import Login from './views/Login.vue'
 import Profile from './views/Profile.vue'
 import Subscriptions from './views/Subscriptions.vue'
+import Point from './views/Point.vue'
 
 // Routing config
 const router = createRouter({
@@ -32,7 +33,8 @@ const router = createRouter({
         {path: '/groups', name: 'Gruppi', component: Groups},
         {path: '/register', name: 'Register', component: Register},
         {path: '/login', name: 'Login', component: Login},
-        {path: '/profile', name: 'Profile', component: Profile}
+        {path: '/profile', name: 'Profile', component: Profile},
+        {path: '/point', name: 'AddPoint', component: Point}
     ]
 })
 

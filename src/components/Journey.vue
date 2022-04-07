@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ListModels />
+        <ListModels @getTemplate="getTemplate" />
         <div style="margin-left: 20%; margin-right: 20%">
             <div style="width: 50vh; float: left">
                 <div id="title-content">
@@ -25,6 +25,7 @@
                         <input type="password" placeholder="Password" v-model="password">
                         <input type="password" placeholder="Conferma password" v-model="confirmPassword">
                     </div>
+                    <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
                     <input type="submit" value="CONFERMA">
                 </form>
             </div>
@@ -33,6 +34,7 @@
 </template>
 
 <script>
+    import { getFirestore, doc, setDoc} from "firebase/firestore"
     import ListModels from "./ListModels.vue"
 
     export default {
@@ -47,12 +49,15 @@
                 closeSubscriptionDate: "",
                 password: "",
                 confirmPassword: "",
-                templateId: ""
+                templateId: "",
+                participants: [], //Implementare l'array di partecipanti
+                errorMsg: ""
             }
         },
         methods: {
             getTemplate(value) {
                 this.templateId = value
+                console.log(value)
             },
             switchPrivacy(event) {
                 if (event.target.checked) {
@@ -62,7 +67,47 @@
                 }
             },
             organizeJourney() {
+                //controllo vari errori
+                //se non sono stati inseriti nome o descrizione
+                if(this.title === ""){
+                    this.errorMsg = "Inserire un titolo per il tragitto"
+                    return
+                //se le date non sono state inserite
+                }else if(this.start === "" || this.end === "" || this.closeSubscriptionDate === ""){
+                    this.errorMsg = "Se il pericolo è temporaneo, è obbligatorio inserire due date valide"
+                    return
+                //se la fine è prima dell'inizio    
+                }else if(this.start > this.end){
+                    this.errorMsg = "La data di fine deve essere maggiore di quella di inizio"
+                    return
+                //Se l'inizio è prima della data corrente
+                }else if((new Date()) > new Date(this.end)){
+                    this.errorMsg = "La data di inizio non può essere già passata"
+                    return
+                //Se la chiusura è prima della data corrente
+                }else if((new Date()) > new Date(this.closeSubscriptionDate)){
+                    this.errorMsg = "La data di chiusura delle iscrizioni non può essere già passata"
+                    return
+                //Se la fine è prima della data corrente
+                }else if((new Date()) > new Date(this.end)){
+                    this.errorMsg = "La data di fine non può essere già passata"
+                    return
+                }
+                const path = "tragitti/" + this.title
+                const journeyPath = doc(getFirestore(), path)
 
+                const journeyData = {
+                    titolo: this.title,
+                    partenza: this.start,
+                    arrivo: this.end,
+                    chiusura_iscrizione: this.closeSubscriptionDate,
+                    password: this.password,
+                    modello_Id: this.templateId
+                }
+
+                setDoc(journeyPath, journeyData)
+
+                this.$router.push("/")
             }
         }
     }

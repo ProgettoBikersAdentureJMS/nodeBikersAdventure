@@ -37,10 +37,14 @@
 
 <script>
     import ping from "../assets/ping.png" // Import image
+    import { getAuth } from "firebase/auth"
+    import { updateDoc } from '@firebase/firestore'
+    import { getFirestore, doc, collection, getDocs} from "firebase/firestore"
 
     export default {
         data() {
             return {
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 center: [0, 0],
                 projection: 'EPSG:4326',
                 zoom: 16,
@@ -62,11 +66,37 @@
                         followers: 300
                     }
                 ]
+            
             }
         },
         mounted() { // Called when page loaded all components
+            
             navigator.geolocation.watchPosition( 
                 position => {
+                    var currentUser = getAuth().currentUser
+                    if(currentUser != null){
+                        console.log("son dentro ")
+
+                        this.snapshotUsers.then(data => {
+                            data.forEach(user1 => {
+                                var user = user1.data()
+                                console.log("questo utente")
+                                console.log(user.email)
+                                console.log("mail del bro " + currentUser.email)
+                                if(currentUser.email === user.email){
+                                    //aggiorna nel database
+                                    console.log("son dentro di nuovo")
+                                    const path = "utenti/" + user.username
+                                    const document = doc(getFirestore(), path)
+                                    const currentPosition = {
+                                        posizione: [position.coords.longitude, position.coords.latitude]
+                                    }
+                                    updateDoc(document, currentPosition)
+                                }
+                            })
+                        })
+                        
+                    }
                     this.center = [position.coords.longitude, position.coords.latitude]
                     console.log(this.center)
                 },
