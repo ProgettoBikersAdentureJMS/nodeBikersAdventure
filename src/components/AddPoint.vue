@@ -4,11 +4,7 @@
         <button @click="enableSelect(1)">Punto di pericolo</button>
         <button @click="enableSelect(2)">Punto di interesse</button>
 
-<<<<<<< HEAD
         <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
-=======
-        <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 70vh">
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
             <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
                 :projection="projection" />
             <ol-tile-layer>
@@ -38,7 +34,6 @@
             </ol-vector-layer>
 
         </ol-map>
-<<<<<<< HEAD
         <label id="choice" type="text" style="font-size:40px; color:orange; margin:20px">pericolo/interesse</label>
         <div style="margin-left: 20%; margin-right: 20%">
             <!--div e form per il punto di interesse-->
@@ -87,21 +82,13 @@
                 </form>
             </div>
         </div>
-=======
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
     </div>
 </template>
 
 <script>
-<<<<<<< HEAD
     import { getFirestore, doc, setDoc} from "firebase/firestore"
     import warning from "../assets/warning.png"
     import interest from "../assets/interest.png"
-=======
-    import warning from "../assets/warning.png"
-    import interest from "../assets/interest.png"
-    import ping from "../assets/ping.png"
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
     import { transform } from "ol/proj"
 
     export default {
@@ -116,7 +103,6 @@
                 selectInterestPoint: false,
                 warningPoint: [0, 0],
                 interestPoint: [0, 0],
-<<<<<<< HEAD
                 errorMsg: "",
                 
                 //path per le immagini
@@ -130,13 +116,6 @@
                 //salvo nome e descrizione sia per punti di pericolo che di interesse
                 name: "",
                 description: ""
-=======
-                name: "",
-                errorMsg: "",
-                warning,
-                interest,
-                ping
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
             }
         },
         methods: {
@@ -146,15 +125,11 @@
                     case 1:
                         this.selectWarningPoint = true
                         this.selectInterestPoint = false
-<<<<<<< HEAD
                         document.getElementById("choice").innerHTML="Punto di pericolo"
-=======
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                         break
                     case 2:
                         this.selectWarningPoint = false
                         this.selectInterestPoint = true
-<<<<<<< HEAD
                         document.getElementById("choice").innerHTML="Punto di interesse"
                         break
                 }
@@ -168,33 +143,21 @@
                     this.warningIsTemporary = false
                 }
             },
-=======
-                        break
-                }
-            },
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
             drawStart(event) {
                 // https://openlayers.org/en/latest/apidoc/module-ol_proj.html#.transform
                 var coords = event.feature.getGeometry().getCoordinates()
 
                 // Trasforma le coordinate in longitudine e latitudine
                 var coordsLonLat = transform(coords, "EPSG:4326", "EPSG:4326")
-<<<<<<< HEAD
 
 
                 if (this.selectWarningPoint) {
                     //selezionato un warning
 
-=======
-                
-
-                if (this.selectWarningPoint) {
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                     this.warningPoint = coordsLonLat
                 } else {
                     this.interestPoint = coordsLonLat
                 }
-<<<<<<< HEAD
             },
             saveInterest() {
                 //controllo vari errori
@@ -274,8 +237,6 @@
                 setDoc(warningPath, warningData)
 
                 this.$router.push("/")
-=======
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
             }
         },
         mounted() {
@@ -292,12 +253,9 @@
 </script>
 
 <style>
-<<<<<<< HEAD
     input{
         margin: 10px;
     }
-=======
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
     button {
         margin: 20px;
     }
@@ -305,7 +263,6 @@
     #error {
         color: red;
     }
-<<<<<<< HEAD
     
     .switch {
         position: relative;
@@ -366,7 +323,5 @@
     .slider.round:before {
         border-radius: 50%;
     }
-=======
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
 
 </style>

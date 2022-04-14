@@ -42,20 +42,6 @@
                     <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
-
-            <ol-vector-layer>
-                <ol-source-vector>
-                    <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
-                    <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
-                    <ol-style>
-                        <ol-style-circle :radius="event.followers / 25">
-                            <ol-style-fill :color="fillColor"></ol-style-fill>
-                            <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
-                        </ol-style-circle>
-                    </ol-style>
-                </ol-feature>
-                </ol-source-vector>
-            </ol-vector-layer>
         </ol-map>
         <div>
             <h3>Nome:</h3>
@@ -170,7 +156,8 @@
                 } else if (this.selectPointArrive) {
                     this.positionArrive = coordsLonLat
 
-                    fetch("http://router.project-osrm.org/route/v1/driving/46.024125,8.960298;46.04195388146162,8.91824747345793?steps=true")
+                    // Tragitto da seguire
+                    /*fetch("http://router.project-osrm.org/route/v1/driving/46.024125,8.960298;46.04195388146162,8.91824747345793?steps=true")
                         // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/
                         
                         .then(response => response.json())
@@ -189,7 +176,7 @@
                             flatCoordinates.forEach(flat => {
                                 coordinates.push(this.meters2degress(flat[0], flat[1]))
                             })
-                        })
+                        })*/
                 } else {
                     this.middlePositions.push({coordsLonLat})
                 }

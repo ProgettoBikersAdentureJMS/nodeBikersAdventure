@@ -30,12 +30,52 @@
                 </form>
             </div>
         </div>
+        <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
+            <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
+                :projection="projection" />
+            <ol-tile-layer>
+                <ol-source-osm />
+            </ol-tile-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-geom-point :coordinates="positionStart"></ol-geom-point>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="start" :scale="0.1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-geom-point :coordinates="positionArrive"></ol-geom-point>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="arrive" :scale="0.1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+
+            <ol-vector-layer v-for="middlePoint,itemIndex in middlePositions" :key="itemIndex">
+                <ol-source-vector>
+                    <ol-geom-point :coordinates="middlePoint"></ol-geom-point>
+                </ol-source-vector>
+
+                <ol-style>
+                    <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                </ol-style>
+            </ol-vector-layer>
+        </ol-map>
     </div>
 </template>
 
 <script>
-    import { getFirestore, doc, setDoc} from "firebase/firestore"
+    import { getFirestore, doc, setDoc, getDocs, collection} from "firebase/firestore"
     import ListModels from "./ListModels.vue"
+    import start from "../assets/start.png"
+    import arrive from "../assets/arrive.png"
+    import ping from "../assets/ping.png"
 
     export default {
         components: {
@@ -43,21 +83,32 @@
         },
         data() {
             return {
+                center: [0, 0],
+                projection: 'EPSG:4326',
+                zoom: 16,
+                rotation: 0,
+                drawType: "Point",
+                positionStart: [0, 0],
+                positionArrive: [0, 0],
+                middlePositions: [],
                 title: "",
                 start: "",
                 end: "",
                 closeSubscriptionDate: "",
                 password: "",
                 confirmPassword: "",
-                templateId: "",
+                snapshotTemplates: getDocs(collection(getFirestore(), "modelli")),
+                templateData: [],
                 participants: [], //Implementare l'array di partecipanti
-                errorMsg: ""
+                errorMsg: "",
+                start,
+                arrive,
+                ping
             }
         },
         methods: {
             getTemplate(value) {
-                this.templateId = value
-                console.log(value)
+                
             },
             switchPrivacy(event) {
                 if (event.target.checked) {
@@ -67,7 +118,6 @@
                 }
             },
             organizeJourney() {
-<<<<<<< HEAD
                 //controllo vari errori
                 //se non sono stati inseriti nome o descrizione
                 if(this.title === ""){
@@ -97,22 +147,14 @@
                 const path = "tragitti/" + this.title
                 const journeyPath = doc(getFirestore(), path)
 
-=======
-                const path = "tragitti/" + this.title
-                const journeyPath = doc(getFirestore(), path)
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                 const journeyData = {
                     titolo: this.title,
                     partenza: this.start,
                     arrivo: this.end,
                     chiusura_iscrizione: this.closeSubscriptionDate,
                     password: this.password,
-<<<<<<< HEAD
-                    modello_Id: this.templateId
-=======
                     modello_Id: this.templateId,
                     partecipanti: ["bansam"]
->>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
                 }
 
                 setDoc(journeyPath, journeyData)
