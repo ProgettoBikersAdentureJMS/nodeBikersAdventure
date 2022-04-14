@@ -32,6 +32,43 @@
     export default {
         components: {
             CreateGroup,
+<<<<<<< HEAD
+            GroupsList
+        },
+        mounted() { // Called when page loaded all components
+            navigator.geolocation.watchPosition( 
+                position => {
+                    var currentUser = getAuth().currentUser
+                    if(currentUser != null){
+
+                        this.snapshotUsers.then(data => {
+                            data.forEach(user1 => {
+                                var user = user1.data()
+                                if(currentUser.email === user.email){
+                                    //aggiorna nel database
+                                    const path = "utenti/" + user.username
+                                    const document = doc(getFirestore(), path)
+                                    const currentPosition = {
+                                        posizione: [position.coords.longitude, position.coords.latitude]
+                                    }
+                                    updateDoc(document, currentPosition)
+                                }
+                            })
+                        })
+                        
+                    }
+                    this.center = [position.coords.longitude, position.coords.latitude]
+                    console.log(this.center)
+                },
+                error => { 
+                    console.log(error.message)
+                }
+            )
+        }
+    }
+    
+</script>
+=======
             GroupsList,
             GroupInfo
         },
@@ -85,3 +122,4 @@
         flex: 1;
     }
 </style>
+>>>>>>> 8d9e5958358fa68cf3012399a9b43c784c2b7f9a

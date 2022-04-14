@@ -3,7 +3,6 @@
     <div>
         <button @click="enableSelect(1)">Punto di pericolo</button>
         <button @click="enableSelect(2)">Punto di interesse</button>
-
         <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height: 35vh">
             <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
                 :projection="projection" />
@@ -63,8 +62,6 @@
             </form>
             </div>
 
-
-
             <!--div e form per il punto di interesse-->
             <div style="width: 50vh; float: left" v-if="selectInterestPoint">
                 <div id="title-content">
@@ -89,6 +86,7 @@
     import { getFirestore, doc, setDoc} from "firebase/firestore"
     import warning from "../assets/warning.png"
     import interest from "../assets/interest.png"
+    import ping from "../assets/ping.png"
     import { transform } from "ol/proj"
 
     export default {
@@ -108,6 +106,7 @@
                 //path per le immagini
                 warning, 
                 interest,
+                ping,
 
                 startWarning :"",
                 endWarning : "",
@@ -115,7 +114,7 @@
 
                 //salvo nome e descrizione sia per punti di pericolo che di interesse
                 name: "",
-                description: ""
+                description: "",
             }
         },
         methods: {
@@ -150,10 +149,7 @@
                 // Trasforma le coordinate in longitudine e latitudine
                 var coordsLonLat = transform(coords, "EPSG:4326", "EPSG:4326")
 
-
                 if (this.selectWarningPoint) {
-                    //selezionato un warning
-
                     this.warningPoint = coordsLonLat
                 } else {
                     this.interestPoint = coordsLonLat
@@ -184,7 +180,7 @@
                 this.$router.push("/")
             },
             saveWarning() {
-                //controllo vari errori
+                //!controllo vari errori
 
                 //se il punto non è stato selezionato
                 if(this.warningPoint[0] == 0 && this.warningPoint[1] == 0){
@@ -239,13 +235,31 @@
                 this.$router.push("/")
             }
         },
-        mounted() {
+        mounted() { // Called when page loaded all components
+            
             navigator.geolocation.watchPosition( 
                 position => {
+                    var currentUser = getAuth().currentUser
+                    if(currentUser != null){
+
+                        this.snapshotUsers.then(data => {
+                            data.forEach(user1 => {
+                                var user = user1.data()
+                                if(currentUser.email === user.email){
+                                    //aggiorna nel database
+                                    const path = "utenti/" + user.username
+                                    const document = doc(getFirestore(), path)
+                                    const currentPosition = {
+                                        posizione: [position.coords.longitude, position.coords.latitude]
+                                    }
+                                    updateDoc(document, currentPosition)
+                                }
+                            })
+                        })
+                        
+                    }
                     this.center = [position.coords.longitude, position.coords.latitude]
-                },
-                error => { 
-                    console.log(error.message)
+                    console.log(this.center)
                 }
             )
         }
@@ -253,6 +267,10 @@
 </script>
 
 <style>
+    input{
+        margin: 10px;
+    }
+
     input{
         margin: 10px;
     }
@@ -323,5 +341,4 @@
     .slider.round:before {
         border-radius: 50%;
     }
-
 </style>
