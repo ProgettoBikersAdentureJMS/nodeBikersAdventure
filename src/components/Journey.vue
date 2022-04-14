@@ -146,8 +146,6 @@
                 }
                 const path = "tragitti/" + this.title
                 const journeyPath = doc(getFirestore(), path)
-                const path = "tragitti/" + this.title
-                const journeyPath = doc(getFirestore(), path)
                 const journeyData = {
                     titolo: this.title,
                     partenza: this.start,

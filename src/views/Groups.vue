@@ -32,7 +32,6 @@
     export default {
         components: {
             CreateGroup,
-<<<<<<< HEAD
             GroupsList
         },
         mounted() { // Called when page loaded all components
@@ -66,60 +65,4 @@
             )
         }
     }
-    
 </script>
-=======
-            GroupsList,
-            GroupInfo
-        },
-        data() {
-            return {
-                plusIcon,
-                infoDisplay: '',
-                createDisplay: 'none',
-                snapshotGroups: getDocs(collection(getFirestore(), "gruppi")),
-                name: '',
-                partecipants: []
-            }
-        },
-        methods: {
-            showAddGroup() {
-                this.createDisplay = ""
-                this.infoDisplay = "none"
-            },
-            getName(value) {
-                this.createDisplay = "none"
-                this.infoDisplay = ""
-
-                this.name = value
-                
-                this.snapshotGroups.then(groups => {
-                    groups.forEach(group => {
-                        var groupData = group.data()
-
-                        if (groupData.nome == this.name) {
-                            this.partecipants = groupData.partecipanti
-                        }
-                    })
-                })
-            }
-        }
-    }
-</script>
-
-<style>
-    #groups-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
-    #list-groups, #group-info {
-        flex: 1;
-    }
-
-    #group-info {
-        flex: 1;
-    }
-</style>
->>>>>>> 8d9e5958358fa68cf3012399a9b43c784c2b7f9a
