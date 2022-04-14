@@ -67,6 +67,10 @@
                 }
             },
             organizeJourney() {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 8d9e5958358fa68cf3012399a9b43c784c2b7f9a
                 //controllo vari errori
                 //se non sono stati inseriti nome o descrizione
                 if(this.title === ""){
@@ -96,13 +100,29 @@
                 const path = "tragitti/" + this.title
                 const journeyPath = doc(getFirestore(), path)
 
+<<<<<<< HEAD
+=======
+=======
+                const path = "tragitti/" + this.title
+                const journeyPath = doc(getFirestore(), path)
+>>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
+>>>>>>> 8d9e5958358fa68cf3012399a9b43c784c2b7f9a
                 const journeyData = {
                     titolo: this.title,
                     partenza: this.start,
                     arrivo: this.end,
                     chiusura_iscrizione: this.closeSubscriptionDate,
                     password: this.password,
+<<<<<<< HEAD
                     modello_Id: this.templateId
+=======
+<<<<<<< HEAD
+                    modello_Id: this.templateId
+=======
+                    modello_Id: this.templateId,
+                    partecipanti: ["bansam"]
+>>>>>>> 3b5fdef4cfe4c108957e016af8447870056cd196
+>>>>>>> 8d9e5958358fa68cf3012399a9b43c784c2b7f9a
                 }
 
                 setDoc(journeyPath, journeyData)

@@ -1,7 +1,7 @@
 <template>
     <div id="model">
         <h1>{{ name }}</h1>
-        <button @click="use">UTILIZZA</button>
+        <button @click="use" v-bind:style="{background:buttonColor}">UTILIZZA</button>
     </div>
 </template>
 
@@ -13,8 +13,15 @@
                 default: ""
             }
         },
+        data() {
+            return {
+                buttonColor: "rgba(255, 68, 0, 0.906)"
+            }
+        },
         methods: {
             use() {
+                this.buttonColor = "rgba(210, 215, 211, 1)"
+
                 this.$emit("useTemplate", this.name)
             }
         }

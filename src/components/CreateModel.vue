@@ -42,6 +42,20 @@
                     <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
+
+            <ol-vector-layer>
+                <ol-source-vector>
+                    <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
+                    <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
+                    <ol-style>
+                        <ol-style-circle :radius="event.followers / 25">
+                            <ol-style-fill :color="fillColor"></ol-style-fill>
+                            <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
+                        </ol-style-circle>
+                    </ol-style>
+                </ol-feature>
+                </ol-source-vector>
+            </ol-vector-layer>
         </ol-map>
         <div>
             <h3>Nome:</h3>
@@ -69,6 +83,8 @@
     import ping from "../assets/ping.png"
     import { getFirestore, doc, setDoc } from "firebase/firestore"
     import { transform } from "ol/proj"
+    import { Polyline } from "ol/format"
+    import { Feature } from "ol"
 
     export default {
         data() {
@@ -78,9 +94,11 @@
                 zoom: 16,
                 rotation: 0,
                 drawType: "Point",
+                drawTypeRoute: "LineString",
                 selectPointStart: false,
                 selectPointArrive: false,
                 selectPointMiddle: false,
+                createdRoute: false,
                 positionStart: [0, 0],
                 positionArrive: [0, 0],
                 middlePositions: [],
@@ -151,9 +169,36 @@
                     this.positionStart = coordsLonLat
                 } else if (this.selectPointArrive) {
                     this.positionArrive = coordsLonLat
+
+                    fetch("http://router.project-osrm.org/route/v1/driving/46.024125,8.960298;46.04195388146162,8.91824747345793?steps=true")
+                        // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/
+                        
+                        .then(response => response.json())
+                        .then(data => {
+                            var format = new Polyline()
+                            var line = format.readGeometry(data.routes[0].geometry, {
+                                dataProjection: 'EPSG:4326',
+                                featureProjection: 'EPSG:900913'
+                            })
+                            
+                            var feature = new Feature(line)
+
+                            var flatCoordinates = feature.getGeometry().getCoordinates()
+                            var coordinates = []
+
+                            flatCoordinates.forEach(flat => {
+                                coordinates.push(this.meters2degress(flat[0], flat[1]))
+                            })
+                        })
                 } else {
                     this.middlePositions.push({coordsLonLat})
                 }
+            },
+            meters2degress(x,y) {
+                var lon = x *  180 / 20037508.34 ;
+                //thanks magichim @ github for the correction
+                var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90; 
+                return [lon, lat]
             }
         },
         mounted() { // Called when page loaded all components

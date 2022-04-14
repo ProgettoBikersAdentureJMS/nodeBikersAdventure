@@ -2,7 +2,8 @@
     <Group v-for="group, itemIndex in groups"
     :key="itemIndex"
     :image="group.immagine"
-    :name="group.nome" />
+    :name="group.nome"
+    @getName="getName" />
 </template>
 
 <script>
@@ -17,8 +18,13 @@
             return {
                 snapshotUsers: getDocs(collection(getFirestore(), "utenti")), 
                 snapshotGroups: getDocs(collection(getFirestore(), "gruppi")),
-                username: "",
+                username: "bansam",
                 groups: []
+            }
+        },
+        methods: {
+            getName(value) {
+                this.$emit("getName", value)
             }
         },
         mounted() {
@@ -28,7 +34,6 @@
                 data.forEach(user => {
                     if (user.data().email == email) {
                         this.username = user.data().username
-
                         return
                     }
                 })
@@ -37,7 +42,6 @@
             this.snapshotGroups.then(data => {
                 data.forEach(group => {
                     var groupData = group.data()
-
                     if (groupData.partecipanti != null) {
                         if (groupData.partecipanti.includes(this.username)) {
                             this.groups.push(groupData)
