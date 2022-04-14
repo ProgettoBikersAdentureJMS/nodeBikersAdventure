@@ -19,21 +19,6 @@
             </ol-vector-layer>
         </ol-geolocation>
 
-        <!-- Raduni -->
-        <ol-vector-layer>
-            <ol-source-vector>
-                <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
-                    <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
-                    <ol-style>
-                        <ol-style-circle :radius="event.followers / 25">
-                            <ol-style-fill :color="fillColor"></ol-style-fill>
-                            <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
-                        </ol-style-circle>
-                    </ol-style>
-                </ol-feature>
-            </ol-source-vector>
-        </ol-vector-layer>
-
         <!-- Punti di pericolo -->
         <ol-vector-layer>
             <ol-source-vector>
@@ -65,22 +50,40 @@
                 </ol-feature>
             </ol-source-vector>
         </ol-vector-layer>
+
+        <!-- Punti dove si trovano i partecipanti -->
+        <ol-vector-layer>
+            <ol-source-vector>
+                <ol-feature v-for="partecipant, partecipantIndex in partecipants" :key="partecipantIndex">
+                    <ol-geom-point :coordinates="partecipant.posizione"></ol-geom-point>
+                    <ol-style>
+                        <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                    </ol-style>
+                </ol-feature>
+            </ol-source-vector>
+        </ol-vector-layer>
     </ol-map>
 </template>
 
 <script>
     import ping from "../assets/ping.png"
-    import { getAuth } from "firebase/auth"
-    import { getFirestore, doc, collection, getDocs, updateDoc} from "firebase/firestore"
-    import warning from "../assets/warning.png"
-    import interest from "../assets/interest.png"
+    import { getFirestore, collection, getDocs} from "firebase/firestore"
 
     export default {
+        props: {
+            subscriptionDoc: {
+                type: Object,
+                default: null
+            }
+        },
         data() {
             return {
                 snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 snapshotWarningPoints: getDocs(collection(getFirestore(), "puntiPericolo")),
                 snapshotInterestPoints: getDocs(collection(getFirestore(), "puntiInteresse")),
+                warningPoints: [],
+                interestPoints: [],
+                partecipants: [],
                 center: [0, 0],
                 projection: 'EPSG:4326',
                 zoom: 16,
@@ -91,23 +94,7 @@
                 strokeColor2: "red",
                 strokeColor3: "green",
                 fillColor: "white",
-                ping,
-                warning,
-                interest,
-                events: [
-                    {
-                        id: 0,
-                        coordinates: [9, 46.2],
-                        followers: 150
-                    },
-                    {
-                        id: 1,
-                        coordinates: [9, 47],
-                        followers: 300
-                    }
-                ],
-                warningPoints: [],
-                interestPoints: []
+                ping
             }
         },
         mounted() {
@@ -116,40 +103,33 @@
                     this.warningPoints.push(warningPoint.data())
                 })
             })
+
             this.snapshotInterestPoints.then(data => {
                 data.forEach(interestPoint => {
                     this.interestPoints.push(interestPoint.data())
                 })
             })
 
-            navigator.geolocation.watchPosition( 
-                position => {
-                    var currentUser = getAuth().currentUser
-                    
-                    if(currentUser != null){
+            let aggiorna = () => {
+                if (this.subscriptionDoc != null) {
+                    var data = this.subscriptionDoc.partecipanti
+                    data.forEach(partecipant => {
                         this.snapshotUsers.then(data => {
-                            data.forEach(user1 => {
-                                var user = user1.data()
-
-                                if(currentUser.email === user.email){
-                                    //aggiorna nel database
-                                    const path = "utenti/" + user.username
-                                    const document = doc(getFirestore(), path)
-                                    const currentPosition = {
-                                        posizione: [position.coords.longitude, position.coords.latitude]
-                                    }
-                                    updateDoc(document, currentPosition)
+                            for (var i = 0; i < data.length; i++) {
+                                console.log(data[i])
+                                var userData = data[i].data()
+                                if (userData.username == partecipant) {
+                                    this.partecipants.push(userData.posizione)
+                                    console.log(userData.posizione)
+                                    break
                                 }
-                            })
+                            }
                         })
-                        
-                    }
-                    this.center = [position.coords.longitude, position.coords.latitude]
-                },
-                error => { 
-                    console.log(error.message)
+                    })
                 }
-            )
+            }
+
+            setTimeout(aggiorna, 5000)
         }
     }
 </script>

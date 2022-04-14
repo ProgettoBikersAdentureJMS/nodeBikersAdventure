@@ -36,15 +36,7 @@
         },
         methods: {
             takePart() {
-                var currentUserEmail = getAuth().currentUser.email
-                this.snapshot.then(data => {
-                    data.forEach(doc => {
-                        var userData = doc.data()
-                        if (userData.email == currentUserEmail) {
-                            //update doc
-                        }
-                    })
-                })
+                this.$emit("takePart", this.title)
             },
             formatDate(date) {
                 var dateF = new Date(date)

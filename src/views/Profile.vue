@@ -60,12 +60,11 @@
                     this.errMsg = "La vecchia email non corrisponde a quella attuale"
                 }
             },
-            mounted() { // Called when page loaded all components
+            mounted() {
                 navigator.geolocation.watchPosition( 
                     position => {
                         var currentUser = getAuth().currentUser
                         if(currentUser != null){
-
                             this.snapshotUsers.then(data => {
                                 data.forEach(user1 => {
                                     var user = user1.data()

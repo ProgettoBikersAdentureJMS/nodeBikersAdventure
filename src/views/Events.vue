@@ -12,7 +12,7 @@
 	import EventsList from '../components/EventsList.vue'
 	import CreateEvent from '../components/CreateEvent.vue'
     import { getAuth } from "firebase/auth"
-    import { getFirestore, doc, updateDoc } from "firebase/firestore"
+    import { getFirestore, doc, updateDoc, getDocs, collection } from "firebase/firestore"
 
 	export default {
 		components: {
@@ -22,7 +22,8 @@
 		data() {
 			return {
 				displayList: "block",
-				displayCreate: "none"
+				displayCreate: "none",
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti"))
 			}
 		},
 		methods: {
@@ -37,12 +38,10 @@
 			}
 		},
 		mounted() { // Called when page loaded all components
-            
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
                     if(currentUser != null){
-
                         this.snapshotUsers.then(data => {
                             data.forEach(user1 => {
                                 var user = user1.data()
@@ -60,7 +59,6 @@
                         
                     }
                     this.center = [position.coords.longitude, position.coords.latitude]
-                    console.log(this.center)
                 },
                 error => { 
                     console.log(error.message)

@@ -52,8 +52,9 @@
 
 <script>
     import ping from "../assets/ping.png"
-    import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore"
+    import { getFirestore, doc, setDoc, updateDoc, getDocs, collection, } from "firebase/firestore"
     import { transform } from "ol/proj"
+    import { getAuth } from "firebase/auth"
 
     export default {
         data() {
@@ -71,7 +72,8 @@
                 confirmPassword: "",
                 selectPoint: false,
                 position: [0, 0],
-                ping
+                ping,
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti"))
             }
         },
         methods: {
@@ -108,13 +110,11 @@
                 this.position = transform(coords, "EPSG:4326", "EPSG:4326")
             }
         },
-        mounted() { // Called when page loaded all components
-            
+        mounted() {
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
                     if(currentUser != null){
-
                         this.snapshotUsers.then(data => {
                             data.forEach(user1 => {
                                 var user = user1.data()

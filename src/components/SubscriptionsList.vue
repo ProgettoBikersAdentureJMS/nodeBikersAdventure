@@ -1,12 +1,13 @@
 <template>
-    <div>
+    <div v-if="!setMap">
         <h1>Raduni</h1>
         <hr>
         <Subscription v-for="event, itemIndex in events"
         :key="itemIndex"
         :title="event.titolo" 
         :start="event.inizio" 
-        :end="event.termine" />
+        :end="event.termine"
+        @getId="getId" />
         <br>
         <h1>Tragitti</h1>
         <hr>
@@ -16,27 +17,41 @@
         :start="event.partenza" 
         :end="event.arrivo" />
     </div>
+    <SubscriptionMap v-if="setMap" :subscriptionDoc="doc" />
 </template>
 
 <script>
     import Subscription from "./Subscription.vue"
+    import SubscriptionMap from "./SubscriptionMap.vue"
     import { collection, getDocs, getFirestore } from '@firebase/firestore'
     import { getAuth } from '@firebase/auth'
 
     export default {
         components: {
-            Subscription
+            Subscription,
+            SubscriptionMap
         },
         data() {
             return {
                 snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 snapshotEvents: getDocs(collection(getFirestore(), "raduni")),
                 snapshotJourneys: getDocs(collection(getFirestore(), "tragitti")),
-                user: null,
-                eventsName: [],
                 events: [],
+                eventsName: [],
+                journeys: [],
                 journeysName: [],
-                journeys: []
+                setMap: false,
+                doc: null
+            }
+        },
+        methods: {
+            getId(value) {
+                this.events.forEach(event => {
+                    if (value == event.titolo) {
+                        this.doc = event
+                    }    
+                })
+                this.setMap = true
             }
         },
         mounted() {
@@ -50,6 +65,7 @@
                     if (email == currentEmail) {
                         this.user = user
 
+                        console.log(user.data().raduni)
                         user.data().raduni.forEach(eventName => {
                             this.eventsName.push(eventName)
                         })

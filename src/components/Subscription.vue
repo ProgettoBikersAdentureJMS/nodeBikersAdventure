@@ -5,6 +5,7 @@
             <p>Inizia: {{ formatDate(start) }}</p>
             <p>Termina: {{ formatDate(end) }} </p>
         </div>
+        <button @click="getId()">ULTERIORI INFORMAZIONI</button>
     </div>
 </template>
 
@@ -42,6 +43,9 @@
             },
             formatField(value) {
                 return value < 10 ? "0" + value : value.toString()
+            },
+            getId() {
+                this.$emit("getId", this.title)
             }
         }
     }
