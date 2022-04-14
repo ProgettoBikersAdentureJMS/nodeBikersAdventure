@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Scegli il modello</h1>
-        <Model @useTemplate="useTemplate" v-for="model, itemIndex in models" :key="itemIndex" :name="model.nome" />
+        <Model @getTemplate="getTemplate" v-for="model, itemIndex in models" :key="itemIndex" :name="model.nome" />
     </div>
 </template>
 
@@ -27,7 +27,7 @@
             })
         },
         methods: {
-            useTemplate(value) {
+            getTemplate(value) {
                 this.$emit("getTemplate", this.value)
             }
         }
