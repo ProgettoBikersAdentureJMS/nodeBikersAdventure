@@ -101,6 +101,7 @@
                 templateData: [],
                 participants: [], //Implementare l'array di partecipanti
                 errorMsg: "",
+                templateId: null,
                 start,
                 arrive,
                 ping
@@ -108,7 +109,7 @@
         },
         methods: {
             getTemplate(value) {
-                
+                this.templateId = value
             },
             switchPrivacy(event) {
                 if (event.target.checked) {

@@ -19,6 +19,7 @@
             </ol-vector-layer>
         </ol-geolocation>
 
+        <!-- Raduni -->
         <ol-vector-layer>
             <ol-source-vector>
                 <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
@@ -32,6 +33,30 @@
                 </ol-feature>
             </ol-source-vector>
         </ol-vector-layer>
+
+        <!-- Punti di pericolo -->
+        <ol-vector-layer>
+            <ol-source-vector>
+                <ol-feature v-for="warning, warningIndex in warningPoints" :key="warningIndex">
+                    <ol-geom-point :coordinates="warning.posizione"></ol-geom-point>
+                    <ol-style>
+                        <ol-style-icon :src="warning" :scale="1"></ol-style-icon>
+                    </ol-style>
+                </ol-feature>
+            </ol-source-vector>
+        </ol-vector-layer>
+
+        <!-- Punti di interesse -->
+        <ol-vector-layer>
+            <ol-source-vector>
+                <ol-feature v-for="interest, interestIndex in interestPoints" :key="interestIndex">
+                    <ol-geom-point :coordinates="interest.posizione"></ol-geom-point>
+                    <ol-style>
+                        <ol-style-icon :src="interest" :scale="1"></ol-style-icon>
+                    </ol-style>
+                </ol-feature>
+            </ol-source-vector>
+        </ol-vector-layer>
     </ol-map>
 </template>
 
@@ -40,11 +65,15 @@
     import { getAuth } from "firebase/auth"
     import { updateDoc } from '@firebase/firestore'
     import { getFirestore, doc, collection, getDocs} from "firebase/firestore"
+    import warning from "../assets/warning.png"
+    import interest from "../assets/interest.png"
 
     export default {
         data() {
             return {
                 snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
+                snapshotWarningPoints: getDocs(collection(getFirestore(), "puntiPericolo")),
+                snapshotInterestPoints: getDocs(collection(getFirestore(), "puntiInteresse")),
                 center: [0, 0],
                 projection: 'EPSG:4326',
                 zoom: 16,
@@ -54,6 +83,8 @@
                 strokeColor: "red",
                 fillColor: "white",
                 ping,
+                warning,
+                interest,
                 events: [
                     {
                         id: 0,
@@ -65,8 +96,9 @@
                         coordinates: [9, 47],
                         followers: 300
                     }
-                ]
-            
+                ],
+                warningPoints: [],
+                interestPoints: []
             }
         },
         mounted() { // Called when page loaded all components
