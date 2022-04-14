@@ -52,7 +52,7 @@
 
 <script>
     import ping from "../assets/ping.png"
-    import { getFirestore, doc, setDoc } from "firebase/firestore"
+    import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore"
     import { transform } from "ol/proj"
 
     export default {

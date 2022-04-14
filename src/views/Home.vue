@@ -38,9 +38,13 @@
         <ol-vector-layer>
             <ol-source-vector>
                 <ol-feature v-for="warning, warningIndex in warningPoints" :key="warningIndex">
-                    <ol-geom-point :coordinates="warning.posizione"></ol-geom-point>
+                    <ol-geom-point :coordinates="warning.punto_pericolo"></ol-geom-point>
                     <ol-style>
-                        <ol-style-icon :src="warning" :scale="1"></ol-style-icon>
+                        <ol-style-circle :radius="20">
+                            <ol-style-fill :color="fillColor"></ol-style-fill>
+                            <ol-style-stroke :color="strokeColor2" :width="strokeWidth"></ol-style-stroke>
+                        </ol-style-circle>
+                        <!--<ol-style-icon :src="warning" :scale="1"></ol-style-icon>-->
                     </ol-style>
                 </ol-feature>
             </ol-source-vector>
@@ -50,9 +54,13 @@
         <ol-vector-layer>
             <ol-source-vector>
                 <ol-feature v-for="interest, interestIndex in interestPoints" :key="interestIndex">
-                    <ol-geom-point :coordinates="interest.posizione"></ol-geom-point>
+                    <ol-geom-point :coordinates="interest.punto_interesse"></ol-geom-point>
                     <ol-style>
-                        <ol-style-icon :src="interest" :scale="1"></ol-style-icon>
+                        <ol-style-circle :radius="30">
+                            <ol-style-fill :color="fillColor"></ol-style-fill>
+                            <ol-style-stroke :color="strokeColor3" :width="strokeWidth"></ol-style-stroke>
+                        </ol-style-circle>
+                        <!--<ol-style-icon :src="interest" :scale="1"></ol-style-icon>-->
                     </ol-style>
                 </ol-feature>
             </ol-source-vector>
@@ -63,8 +71,7 @@
 <script>
     import ping from "../assets/ping.png" // Import image
     import { getAuth } from "firebase/auth"
-    import { updateDoc } from '@firebase/firestore'
-    import { getFirestore, doc, collection, getDocs} from "firebase/firestore"
+    import { getFirestore, doc, collection, getDocs, updateDoc} from "firebase/firestore"
     import warning from "../assets/warning.png"
     import interest from "../assets/interest.png"
 
@@ -80,7 +87,9 @@
                 rotation: 0,
                 radius: 5,
                 strokeWidth: 4,
-                strokeColor: "red",
+                strokeColor: "blue",
+                strokeColor2: "red",
+                strokeColor3: "green",
                 fillColor: "white",
                 ping,
                 warning,
@@ -101,23 +110,29 @@
                 interestPoints: []
             }
         },
-        mounted() { // Called when page loaded all components
-            
+        mounted() {
+            this.snapshotWarningPoints.then(data => {
+                data.forEach(warningPoint => {
+                    this.warningPoints.push(warningPoint.data())
+                })
+            })
+            this.snapshotInterestPoints.then(data => {
+                data.forEach(interestPoint => {
+                    this.interestPoints.push(interestPoint.data())
+                })
+            })
+
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
+                    
                     if(currentUser != null){
-                        console.log("son dentro ")
-
                         this.snapshotUsers.then(data => {
                             data.forEach(user1 => {
                                 var user = user1.data()
-                                console.log("questo utente")
-                                console.log(user.email)
-                                console.log("mail del bro " + currentUser.email)
+
                                 if(currentUser.email === user.email){
                                     //aggiorna nel database
-                                    console.log("son dentro di nuovo")
                                     const path = "utenti/" + user.username
                                     const document = doc(getFirestore(), path)
                                     const currentPosition = {
@@ -130,7 +145,6 @@
                         
                     }
                     this.center = [position.coords.longitude, position.coords.latitude]
-                    console.log(this.center)
                 },
                 error => { 
                     console.log(error.message)

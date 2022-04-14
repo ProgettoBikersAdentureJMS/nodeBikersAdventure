@@ -71,7 +71,7 @@
 </template>
 
 <script>
-    import { getFirestore, doc, setDoc, getDocs, collection} from "firebase/firestore"
+    import { getFirestore, doc, setDoc, getDocs, collection, updateDoc} from "firebase/firestore"
     import ListModels from "./ListModels.vue"
     import start from "../assets/start.png"
     import arrive from "../assets/arrive.png"

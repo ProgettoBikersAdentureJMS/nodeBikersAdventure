@@ -22,6 +22,7 @@
 
 <script>
     import { getAuth, updateEmail } from "firebase/auth"
+    import { doc, getFirestore, updateDoc } from "firebase/firestore"
 
     export default {
         data() {

@@ -7,7 +7,7 @@
 
 <script>
     import Model from "./Model.vue"
-    import { getFirestore, collection, getDocs } from "firebase/firestore"
+    import { getFirestore, collection, getDocs, updateDoc } from "firebase/firestore"
 
     export default {
         components: { 

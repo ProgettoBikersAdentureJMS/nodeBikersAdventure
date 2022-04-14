@@ -67,7 +67,8 @@
     import start from "../assets/start.png"
     import arrive from "../assets/arrive.png"
     import ping from "../assets/ping.png"
-    import { getFirestore, doc, setDoc } from "firebase/firestore"
+    import { getFirestore, doc, setDoc, getDocs, collection, updateDoc } from "firebase/firestore"
+    import { getAuth } from "firebase/auth"
     import { transform } from "ol/proj"
     import { Polyline } from "ol/format"
     import { Feature } from "ol"
@@ -88,6 +89,8 @@
                 positionStart: [0, 0],
                 positionArrive: [0, 0],
                 middlePositions: [],
+                //ottenere la collezione di tutti gli utenti
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 name: "",
                 password: "",
                 confirmPassword: "",
@@ -188,8 +191,7 @@
                 return [lon, lat]
             }
         },
-        mounted() { // Called when page loaded all components
-            
+        mounted() { // Called when page loaded all components    
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser

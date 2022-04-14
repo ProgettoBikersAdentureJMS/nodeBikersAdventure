@@ -35,7 +35,7 @@
         </ol-map>
         <label id="choice" type="text" style="font-size:40px; color:orange; margin:20px">pericolo/interesse</label>
         <div style="margin-left: 20%; margin-right: 20%">
-            <!--div e form per il punto di interesse-->
+            <!-- div e form per il punto di pericolo -->
             <div style="width: 50vh; float: left" v-if="selectWarningPoint">
                 <div id="title-content">
                     <h3>Nome del pericolo: <span class="required">*</span></h3>
@@ -49,20 +49,20 @@
             </div>
             <div style="width: 50vh; float: right" v-if="selectWarningPoint">
                 <form @submit.prevent="saveWarning">
-                <input type="text" placeholder="Nome del pericolo" v-model="name" required>
-                <input type="text" placeholder="Breve descrizione" maxlength="100" v-model="description" required>
-                
-                <div id="temporary" style="display:none">
-                    <br>
-                    <input type="datetime-local" v-model="startWarning" required>
-                    <input type="datetime-local" v-model="endWarning" required>
-                </div>
-                <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
-                <input type="submit" value="CONFERMA">
-            </form>
+                    <input type="text" placeholder="Nome del pericolo" v-model="name" required>
+                    <input type="text" placeholder="Breve descrizione" maxlength="100" v-model="description" required>
+                    
+                    <div id="temporary" style="display:none">
+                        <br>
+                        <input v-if="warningIsTemporary" type="datetime-local" v-model="startWarning" required>
+                        <input v-if="warningIsTemporary" type="datetime-local" v-model="endWarning" required>
+                    </div>
+                    <p id="error" v-if="errorMsg">{{ errorMsg }}</p>
+                    <input type="submit" value="CONFERMA">
+                </form>
             </div>
 
-            <!--div e form per il punto di interesse-->
+            <!-- div e form per il punto di interesse -->
             <div style="width: 50vh; float: left" v-if="selectInterestPoint">
                 <div id="title-content">
                     <h3>Nome del punto di interesse: <span class="required">*</span></h3>
@@ -83,7 +83,8 @@
 </template>
 
 <script>
-    import { getFirestore, doc, setDoc} from "firebase/firestore"
+    import { getAuth } from "firebase/auth"
+    import { getFirestore, doc, setDoc, updateDoc, getDocs, collection } from "firebase/firestore"
     import warning from "../assets/warning.png"
     import interest from "../assets/interest.png"
     import ping from "../assets/ping.png"
@@ -102,6 +103,7 @@
                 warningPoint: [0, 0],
                 interestPoint: [0, 0],
                 errorMsg: "",
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 
                 //path per le immagini
                 warning, 

@@ -26,7 +26,7 @@
     import CreateGroup from "../components/CreateGroup.vue"
     import GroupsList from "../components/GroupsList.vue"
     import GroupInfo from "../components/GroupInfo.vue"
-    import { collection, getDocs, getFirestore } from '@firebase/firestore'
+    import { updateDoc, doc, getFirestore } from '@firebase/firestore'
     import plusIcon from "../assets/plus.png"
 
     export default {

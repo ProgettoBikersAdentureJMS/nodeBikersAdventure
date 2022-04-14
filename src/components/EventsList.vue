@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { collection, getFirestore, getDocs } from '@firebase/firestore'
+import { collection, getFirestore, getDocs, updateDoc } from '@firebase/firestore'
 import Event from "./Event.vue"
 
 export default {

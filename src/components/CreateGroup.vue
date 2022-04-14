@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import { collection, getDocs, getFirestore, doc, setDoc } from '@firebase/firestore'
+    import { collection, getDocs, getFirestore, doc, setDoc, updateDoc } from '@firebase/firestore'
     import plusIcon from "../assets/plus.png"
     import groupIcon from "../assets/group.png"
     import AddUser from "../components/AddUser.vue"

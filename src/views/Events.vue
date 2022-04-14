@@ -11,6 +11,8 @@
 <script>
 	import EventsList from '../components/EventsList.vue'
 	import CreateEvent from '../components/CreateEvent.vue'
+    import { getAuth } from "firebase/auth"
+    import { getFirestore, doc, updateDoc } from "firebase/firestore"
 
 	export default {
 		components: {

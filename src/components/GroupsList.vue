@@ -7,7 +7,7 @@
 </template>
 
 <script>
-    import { collection, getDocs, getFirestore } from '@firebase/firestore'
+    import { collection, getDocs, getFirestore, updateDoc } from '@firebase/firestore'
     import Group from "../components/Group.vue"
 
     export default {
