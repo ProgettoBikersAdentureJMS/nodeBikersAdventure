@@ -28,7 +28,7 @@
         },
         methods: {
             getTemplate(value) {
-                this.$emit("getTemplate", this.value)
+                this.$emit("getTemplate", value)
             }
         }
     }

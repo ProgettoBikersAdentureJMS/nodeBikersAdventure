@@ -22,7 +22,7 @@
             use() {
                 this.buttonColor = "rgba(210, 215, 211, 1)"
 
-                this.$emit("useTemplate", this.name)
+                this.$emit("getTemplate", this.name)
             }
         }
     }

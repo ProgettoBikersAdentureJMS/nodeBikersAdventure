@@ -4,8 +4,8 @@
         <button @click="changeView(1)">Crea un modello</button>
         <button @click="changeView(2)">Organizza un tragitto</button>
         <button @click="changeView(3)">Visualizza tutti i tragitti</button>
-        <CreateModel v-bind:style="{display: displayCreate}" />
-        <Journey v-bind:style="{display: displayOrganize}" />
+        <CreateModel v-if="displayCreate" />
+        <Journey v-if="displayOrganize" />
     </div>
 </template>
 
@@ -20,22 +20,26 @@
         },
         data() {
             return {
-                displayCreate: "none",
-                displayOrganize: "block",
-                displayList: "none"
+                displayCreate: false,
+                displayOrganize: true,
+                displayList: false
             }
         },
         methods: {
             changeView(id) {
 				if (id == 1) {
-					this.displayCreate = "block"
-                    this.displayOrganize = "none"
-                    this.displayList = "none"
+					this.displayCreate = true
+                    this.displayOrganize = false
+                    this.displayList = false
+				} else if (id == 2) {
+					this.displayCreate = false
+                    this.displayOrganize = true
+                    this.displayList = false
 				} else {
-					this.displayCreate = "none"
-                    this.displayOrganize = "block"
-                    this.displayList = "none"
-				}
+                    this.displayCreate = false
+                    this.displayOrganize = false
+                    this.displayList = true
+                }
 			}
         }
     }

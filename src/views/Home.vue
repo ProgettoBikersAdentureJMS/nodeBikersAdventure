@@ -74,6 +74,7 @@
     import { getFirestore, doc, collection, getDocs, updateDoc} from "firebase/firestore"
     import warning from "../assets/warning.png"
     import interest from "../assets/interest.png"
+    import View from 'ol/View'
 
     export default {
         data() {
@@ -81,6 +82,7 @@
                 snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
                 snapshotWarningPoints: getDocs(collection(getFirestore(), "puntiPericolo")),
                 snapshotInterestPoints: getDocs(collection(getFirestore(), "puntiInteresse")),
+                snapshotEvents: getDocs(collection(getFirestore(), "raduni")),
                 center: [0, 0],
                 projection: 'EPSG:4326',
                 zoom: 16,
@@ -94,18 +96,7 @@
                 ping,
                 warning,
                 interest,
-                events: [
-                    {
-                        id: 0,
-                        coordinates: [9, 46.2],
-                        followers: 150
-                    },
-                    {
-                        id: 1,
-                        coordinates: [9, 47],
-                        followers: 300
-                    }
-                ],
+                events: [],
                 warningPoints: [],
                 interestPoints: []
             }
@@ -122,8 +113,38 @@
                 })
             })
 
+            this.snapshotEvents.then(data => {
+                data.forEach(doc => {
+                    var eventData = doc.data()
+                    var date1 = new Date()
+                    var date2 = new Date(eventData.chiusura_iscrizione)
+                    var nrPartecipantiEvent = eventData.partecipanti.length
+                    var posizione = new Array(eventData.ritrovo)
+                    var event = [
+                        followers => nrPartecipantiEvent, 
+                        coordinates => posizione
+                    ]
+                    
+
+                    if (date2 > date1) {
+                        this.events.push(event)
+                    }
+                })
+            })
+
+/*
+            map.on("moveend", function() {
+                    var zoom = map.getView().getZoom(); 
+                    var zoomInfo = 'Zoom level = ' + zoom;
+                    document.getElementById('zoomlevel').innerHTML = zoomInfo;
+                    console.log(ZoomInfo);
+            });
+*/
             navigator.geolocation.watchPosition( 
                 position => {
+                    //this.zoom++
+                    
+
                     var currentUser = getAuth().currentUser
                     
                     if(currentUser != null){

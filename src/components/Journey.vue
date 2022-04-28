@@ -39,7 +39,9 @@
 
             <ol-vector-layer>
                 <ol-source-vector>
-                    <ol-geom-point :coordinates="positionStart"></ol-geom-point>
+                    <ol-feature>
+                        <ol-geom-point :coordinates="positionStart"></ol-geom-point>
+                    </ol-feature>
                 </ol-source-vector>
 
                 <ol-style>
@@ -49,7 +51,9 @@
 
             <ol-vector-layer>
                 <ol-source-vector>
-                    <ol-geom-point :coordinates="positionArrive"></ol-geom-point>
+                    <ol-feature>
+                        <ol-geom-point :coordinates="positionArrive"></ol-geom-point>
+                    </ol-feature>
                 </ol-source-vector>
 
                 <ol-style>
@@ -59,7 +63,9 @@
 
             <ol-vector-layer v-for="middlePoint,itemIndex in middlePositions" :key="itemIndex">
                 <ol-source-vector>
-                    <ol-geom-point :coordinates="middlePoint"></ol-geom-point>
+                    <ol-feature>
+                        <ol-geom-point :coordinates="middlePoint"></ol-geom-point>
+                    </ol-feature>
                 </ol-source-vector>
 
                 <ol-style>
@@ -72,6 +78,9 @@
 
 <script>
     import { getFirestore, doc, setDoc, getDocs, collection, updateDoc} from "firebase/firestore"
+    import { transform } from "ol/proj"
+    import { Polyline } from "ol/format"
+    import { Feature } from "ol"
     import ListModels from "./ListModels.vue"
     import start from "../assets/start.png"
     import arrive from "../assets/arrive.png"
@@ -99,7 +108,7 @@
                 confirmPassword: "",
                 snapshotTemplates: getDocs(collection(getFirestore(), "modelli")),
                 templateData: [],
-                participants: [], //Implementare l'array di partecipanti
+                participants: [],
                 errorMsg: "",
                 templateId: null,
                 start,
@@ -110,6 +119,76 @@
         methods: {
             getTemplate(value) {
                 this.templateId = value
+
+                this.snapshotTemplates.then(data => {
+                    data.forEach(model => {
+                        // get data
+                        var modelData = model.data()
+
+                        if (modelData.nome == this.templateId) {
+                            // set starting point and center
+                            this.positionStart = modelData.partenza
+                            this.center = this.positionStart
+
+                            console.log(modelData.partenza)
+                            console.log(this.positionStart)
+
+                            // set arrive point
+                            this.positionArrive = modelData.arrivo
+                            
+                            // set middle points
+                            modelData.intermedi.forEach(middle => {
+                                console.log(middle)
+                                this.middlePositions.push([middle[0], middle[1]])
+                                console.log(this.middlePositions)
+                            })
+
+                            // create route to follow
+                            var route = "http://router.project-osrm.org/route/v1/driving/"
+                            route += this.positionStart + ";"
+
+                            //console.log(this.middlePositions)
+
+                            this.middlePositions.forEach(middle => {
+                                route += middle.toString() + ";"
+                            })
+                            route += this.positionArrive
+                            route += "?steps=true"
+
+                            //console.log(route)
+
+                            // get route to follow
+                            /*fetch()
+                                // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/        
+                                .then(response => response.json())
+                                .then(data => {
+                                    var format = new Polyline()
+                                    var line = format.readGeometry(data.routes[0].geometry, {
+                                        dataProjection: 'EPSG:4326',
+                                        featureProjection: 'EPSG:900913'
+                                    })
+                                    
+                                    var feature = new Feature(line)
+                                    var flatCoordinates = feature.getGeometry().getCoordinates()
+
+                                    flatCoordinates.forEach(flat => {
+                                        this.middlePositions.push(this.meters2degress(flat[0], flat[1]))
+                                    })
+                                })
+                                .catch(error => {
+                                    console.log(error)
+                                })*/
+
+                            return
+                        }
+                    })
+                })
+            },
+            meters2degress(x,y) {
+                var lon = x *  180 / 20037508.34 ;
+                //thanks magichim @ github for the correction
+                var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90; 
+                return [lon, lat]
             },
             switchPrivacy(event) {
                 if (event.target.checked) {

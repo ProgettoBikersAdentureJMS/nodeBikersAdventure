@@ -69,9 +69,6 @@
     import ping from "../assets/ping.png"
     import { getFirestore, doc, setDoc, getDocs, collection, updateDoc } from "firebase/firestore"
     import { getAuth } from "firebase/auth"
-    import { transform } from "ol/proj"
-    import { Polyline } from "ol/format"
-    import { Feature } from "ol"
 
     export default {
         data() {
@@ -158,48 +155,21 @@
                     this.positionStart = coordsLonLat
                 } else if (this.selectPointArrive) {
                     this.positionArrive = coordsLonLat
-
-                    // Tragitto da seguire
-                    /*fetch("http://router.project-osrm.org/route/v1/driving/46.024125,8.960298;46.04195388146162,8.91824747345793?steps=true")
-                        // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/
-                        
-                        .then(response => response.json())
-                        .then(data => {
-                            var format = new Polyline()
-                            var line = format.readGeometry(data.routes[0].geometry, {
-                                dataProjection: 'EPSG:4326',
-                                featureProjection: 'EPSG:900913'
-                            })
-                            
-                            var feature = new Feature(line)
-
-                            var flatCoordinates = feature.getGeometry().getCoordinates()
-                            var coordinates = []
-
-                            flatCoordinates.forEach(flat => {
-                                coordinates.push(this.meters2degress(flat[0], flat[1]))
-                            })
-                        })*/
                 } else {
                     this.middlePositions.push({coordsLonLat})
                 }
-            },
-            meters2degress(x,y) {
-                var lon = x *  180 / 20037508.34 ;
-                //thanks magichim @ github for the correction
-                var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90; 
-                return [lon, lat]
             }
         },
         mounted() { // Called when page loaded all components    
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
-                    if(currentUser != null){
 
+                    if(currentUser != null){
                         this.snapshotUsers.then(data => {
                             data.forEach(user1 => {
                                 var user = user1.data()
+
                                 if(currentUser.email === user.email){
                                     //aggiorna nel database
                                     const path = "utenti/" + user.username
@@ -207,6 +177,7 @@
                                     const currentPosition = {
                                         posizione: [position.coords.longitude, position.coords.latitude]
                                     }
+
                                     updateDoc(document, currentPosition)
                                 }
                             })
@@ -214,7 +185,6 @@
                         
                     }
                     this.center = [position.coords.longitude, position.coords.latitude]
-                    console.log(this.center)
                 },
                 error => { 
                     console.log(error.message)
