@@ -63,13 +63,29 @@
             </ol-source-vector>
         </ol-vector-layer>
     </ol-map>
+    <h1>Partecipanti</h1>
+    <div>
+        <table>
+            <tr>
+                <th>Nome</th>
+            </tr>
+            <tr>
+                <SubscriptionPartecipants :partecipants="partecipantsName" />
+            </tr>    
+        </table>
+    </div>
 </template>
 
 <script>
     import ping from "../assets/ping.png"
-    import { getFirestore, collection, getDocs} from "firebase/firestore"
+    import { getFirestore, collection, getDocs, doc, updateDoc} from "firebase/firestore"
+    import { getAuth } from "firebase/auth"
+    import SubscriptionPartecipants from "./SubscriptionPartecipants.vue"
 
     export default {
+        components: {
+            SubscriptionPartecipants
+        },
         props: {
             subscriptionDoc: {
                 type: Object,
@@ -84,6 +100,7 @@
                 warningPoints: [],
                 interestPoints: [],
                 partecipants: [],
+                partecipantsName: [],
                 center: [0, 0],
                 projection: 'EPSG:4326',
                 zoom: 16,
@@ -97,31 +114,43 @@
                 ping
             }
         },
-        mounted() {
+        mounted() {            
+            // Add warning points to the array
             this.snapshotWarningPoints.then(data => {
                 data.forEach(warningPoint => {
                     this.warningPoints.push(warningPoint.data())
                 })
             })
 
+            // Add interest points to the array
             this.snapshotInterestPoints.then(data => {
                 data.forEach(interestPoint => {
                     this.interestPoints.push(interestPoint.data())
                 })
             })
 
+            // Read the position of all users subscribed to this event 
             let updatePosition = () => {
+                var currentUser = getAuth().currentUser
+
                 if (this.subscriptionDoc != null) {
                     var data = this.subscriptionDoc.partecipanti
+
                     data.forEach(partecipant => {
                         this.snapshotUsers.then(data => {
-                            for (var i = 0; i < data.length; i++) {
-                                var userData = data[i].data()
+                            data.forEach(user => {
+                               var userData = user.data()
+
+                                if (currentUser != null && userData.email == currentUser.email) {
+                                    this.center = userData.posizione
+                                }
+
                                 if (userData.username == partecipant) {
                                     this.partecipants.push(userData.posizione)
-                                    break
-                                }
-                            }
+                                    this.partecipantsName.push(userData.username)
+                                    return
+                                } 
+                            });
                         })
                     })
                 }

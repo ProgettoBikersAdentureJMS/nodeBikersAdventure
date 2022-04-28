@@ -23,7 +23,7 @@
 <script>
     import Subscription from "./Subscription.vue"
     import SubscriptionMap from "./SubscriptionMap.vue"
-    import { collection, getDocs, getFirestore } from '@firebase/firestore'
+    import { collection, getDocs, getFirestore, doc, updateDoc } from '@firebase/firestore'
     import { getAuth } from '@firebase/auth'
 
     export default {
@@ -94,6 +94,38 @@
                     }
                 })
             })
+
+            // Get the current user position
+            navigator.geolocation.watchPosition( 
+                position => {
+                    var currentUser = getAuth().currentUser
+                    
+                    if(currentUser != null){
+                        this.snapshotUsers.then(data => {
+                            data.forEach(user1 => {
+                                var user = user1.data()
+
+                                if(currentUser.email === user.email){
+                                    //aggiorna nel database
+                                    const path = "utenti/" + user.username
+                                    const document = doc(getFirestore(), path)
+                                    const currentPosition = {
+                                        posizione: [position.coords.longitude, position.coords.latitude]
+                                    }
+
+                                    updateDoc(document, currentPosition)
+                                }
+                            })
+                        })
+                        
+                    }
+
+                    this.center = [position.coords.longitude, position.coords.latitude]
+                },
+                error => { 
+                    console.log(error.message)
+                }
+            )
         }
     }
 </script>
