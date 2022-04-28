@@ -110,17 +110,15 @@
                 })
             })
 
-            let aggiorna = () => {
+            let updatePosition = () => {
                 if (this.subscriptionDoc != null) {
                     var data = this.subscriptionDoc.partecipanti
                     data.forEach(partecipant => {
                         this.snapshotUsers.then(data => {
                             for (var i = 0; i < data.length; i++) {
-                                console.log(data[i])
                                 var userData = data[i].data()
                                 if (userData.username == partecipant) {
                                     this.partecipants.push(userData.posizione)
-                                    console.log(userData.posizione)
                                     break
                                 }
                             }
@@ -129,7 +127,7 @@
                 }
             }
 
-            setTimeout(aggiorna, 5000)
+            setTimeout(updatePosition, 5000)
         }
     }
 </script>
