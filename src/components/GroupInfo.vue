@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="group-info">
         <h1>{{ name }}</h1>
         <hr>
         <h2>Partecipanti:</h2>
@@ -23,3 +23,9 @@
         }   
     }
 </script>
+
+<style>
+    #group-info {
+        width: 100%;
+    }
+</style>

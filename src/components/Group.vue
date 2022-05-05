@@ -59,4 +59,14 @@
         margin: 0;
         margin: 10px 10px 0 10px;
     }
+
+    @media only screen and (max-width: 400px) {
+        #group {
+            display: block;
+            width: 80%;
+            margin: auto;
+            padding: 5px;
+            height: 6vh;
+        }
+    }
 </style>

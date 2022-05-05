@@ -9,6 +9,7 @@
 <script>
     import { collection, getDocs, getFirestore, updateDoc } from '@firebase/firestore'
     import Group from "../components/Group.vue"
+    import { getAuth } from '@firebase/auth'
 
     export default {
         components: {
@@ -28,27 +29,38 @@
             }
         },
         mounted() {
-            var email = "banfisamuel.scuola@gmail.com"
+            let updateGroups = () => {
+                var user = getAuth().currentUser
+                this.groups = []
 
-            this.snapshotUsers.then(data => {
-                data.forEach(user => {
-                    if (user.data().email == email) {
-                        this.username = user.data().username
-                        return
-                    }
-                })
-            })
+                if (user != null) {
+                    var email = user.email
 
-            this.snapshotGroups.then(data => {
-                data.forEach(group => {
-                    var groupData = group.data()
-                    if (groupData.partecipanti != null) {
-                        if (groupData.partecipanti.includes(this.username)) {
-                            this.groups.push(groupData)
-                        }
-                    }
-                })
-            })
+                    this.snapshotUsers.then(data => {
+                        data.forEach(user => {
+                            var userData = user.data()
+
+                            if (userData.email == email) {
+                                this.username = userData.username
+                                return
+                            }
+                        })
+                    })
+
+                    this.snapshotGroups.then(data => {
+                        data.forEach(group => {
+                            var groupData = group.data()
+                            if (groupData.partecipanti != null) {
+                                if (groupData.partecipanti.includes(this.username)) {
+                                    this.groups.push(groupData)
+                                }
+                            }
+                        })
+                    })
+                }
+            }
+
+            setInterval(updateGroups, 1000)
         }
      }
 </script>

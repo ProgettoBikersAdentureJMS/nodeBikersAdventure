@@ -63,6 +63,8 @@
                 }
 
                 setDoc(groupPath, groupData)
+
+                this.$router.push("/")
             }
         },
         mounted() {

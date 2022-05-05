@@ -12,11 +12,8 @@
                 <GroupsList @getName="getName" />
             </div>
             <div id="group-info">
-                <GroupInfo 
-                v-bind:style="{display: infoDisplay}"
-                :name="name"
-                :partecipants="partecipants" />
-                <CreateGroup v-bind:style="{display: createDisplay}" />
+                <GroupInfo v-if="infoDisplay" :name="name" :partecipants="partecipants" />
+                <CreateGroup v-if="createDisplay" />
             </div>
         </div>
     </div>
@@ -26,13 +23,49 @@
     import CreateGroup from "../components/CreateGroup.vue"
     import GroupsList from "../components/GroupsList.vue"
     import GroupInfo from "../components/GroupInfo.vue"
-    import { updateDoc, doc, getFirestore } from '@firebase/firestore'
     import plusIcon from "../assets/plus.png"
+    import { updateDoc, doc, getFirestore, getDocs, collection } from '@firebase/firestore'
+    import { getAuth } from "firebase/auth"
 
     export default {
         components: {
             CreateGroup,
-            GroupsList
+            GroupsList,
+            GroupInfo
+        },
+        data() {
+            return {
+                plusIcon,
+                infoDisplay: false,
+                createDisplay: false,
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti")),
+                snapshotGroups: getDocs(collection(getFirestore(), "gruppi")),
+                partecipants: [],
+                name: null
+            }
+        },
+        methods: {
+            showAddGroup() {
+                this.createDisplay = true
+                this.infoDisplay = false
+            },
+            getName(value) {
+                this.infoDisplay = true
+                this.createDisplay = false
+
+                this.snapshotGroups.then(data => {
+                    data.forEach(group => {
+                        var groupData = group.data()
+
+                        if (groupData.id == value) {
+                            this.name = value
+                            this.partecipants = groupData.partecipanti
+                            
+                            return
+                        }
+                    })
+                })
+            }
         },
         mounted() { // Called when page loaded all components
             navigator.geolocation.watchPosition( 
@@ -57,8 +90,6 @@
                             })
                         })    
                     }
-
-                    this.center = [position.coords.longitude, position.coords.latitude]
                 },
                 error => { 
                     console.log(error.message)
@@ -67,3 +98,10 @@
         }
     }
 </script>
+
+<style>
+    #group-container {
+        width: fit-content;
+        margin: auto;
+    }
+</style>
