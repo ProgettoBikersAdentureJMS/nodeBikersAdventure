@@ -48,7 +48,7 @@
 
 <script>
     import ping from "../assets/ping.png"
-    import { getFirestore, doc, setDoc, updateDoc, getDocs, collection, } from "firebase/firestore"
+    import { getFirestore, doc, setDoc, updateDoc, getDocs, collection, Firestore, } from "firebase/firestore"
     import { transform } from "ol/proj"
     import { getAuth } from "firebase/auth"
 
@@ -107,6 +107,8 @@
             }
         },
         mounted() {
+            var first = true
+            
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
@@ -127,8 +129,11 @@
                         })
                         
                     }
-                    this.center = [position.coords.longitude, position.coords.latitude]
-                    console.log(this.center)
+
+                    if (first) {
+                        this.center = [position.coords.longitude, position.coords.latitude]
+                        first = false
+                    }
                 },
                 error => { 
                     console.log(error.message)

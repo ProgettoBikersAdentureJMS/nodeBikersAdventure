@@ -158,7 +158,9 @@
                 }
             }
         },
-        mounted() { // Called when page loaded all components    
+        mounted() { // Called when page loaded all components
+            var first = true
+
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
@@ -179,15 +181,20 @@
                                     updateDoc(document, currentPosition)
                                 }
                             })
-                        })
-                        
+                        })    
                     }
-                    this.center = [position.coords.longitude, position.coords.latitude]
+
+                    if (first) {
+                        this.center = [position.coords.longitude, position.coords.latitude]
+                        first = false
+                    }
                 },
                 error => { 
                     console.log(error.message)
                 }
             )
+            
+            this.center = [position.coords.longitude, position.coords.latitude]
         }
     }
 </script>
