@@ -1,7 +1,7 @@
 <template>
-    <td v-for="partecipant, partecipantIndex in partecipants" :key="partecipantIndex">
-        <p>{{ partecipant }}</p>
-    </td>
+    <tr v-for="partecipant, partecipantIndex in partecipants" :key="partecipantIndex">
+        <td>{{ partecipant }}</td>
+    </tr>
 </template>
 
 <script>

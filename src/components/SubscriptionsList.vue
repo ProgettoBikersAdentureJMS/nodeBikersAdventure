@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!setMap">
+    <div v-if="!setMap && !setMapJourney">
         <h1>Raduni</h1>
         <hr>
         <Subscription v-for="event, itemIndex in events"
@@ -13,11 +13,13 @@
         <hr>
         <Subscription v-for="journey, itemIndex in journeys"
         :key="itemIndex"
-        :title="event.titolo" 
-        :start="event.partenza" 
-        :end="event.arrivo" />
+        :title="journey.titolo" 
+        :start="journey.partenza" 
+        :end="journey.arrivo"
+        @getId="getId" />
     </div>
     <SubscriptionMap v-if="setMap" :subscriptionDoc="doc" />
+    <SubscriptionMap v-if="setMapJourney" :subscriptionDoc="doc" :isJourney="true" />
 </template>
 
 <script>
@@ -41,17 +43,35 @@
                 journeys: [],
                 journeysName: [],
                 setMap: false,
+                setMapJourney: false,
                 doc: null
             }
         },
         methods: {
+            /**
+             * Questo metodo riceve o l'id dell'evento o l'id del tragitto
+             * e imposta la variabile il documento da passare alla mappa.
+             */
             getId(value) {
                 this.events.forEach(event => {
                     if (value == event.titolo) {
                         this.doc = event
-                    }    
+                        this.setMap = true
+                        this.setMapJourney = false
+
+                        return
+                    }
                 })
-                this.setMap = true
+
+                if (this.doc == null) {
+                    this.journeys.forEach(journey => {
+                        this.doc = journey
+                        this.setMapJourney = true
+                        this.setMap = false
+
+                        return
+                    })
+                }
             },
             resetData() {
                 this.events = []
@@ -70,6 +90,7 @@
 
                 if (user != null) {
                     var currentEmail = getAuth().currentUser.email
+                    this.resetData()
 
                     this.snapshotUsers.then(data => {
                         data.forEach(user => {
@@ -86,6 +107,22 @@
                                     this.journeysName.push(journeyName)
                                 })
 
+                                this.snapshotEvents.then(data => {
+                                    data.forEach(event => {
+                                        if (this.eventsName.includes(event.id)) {
+                                            this.events.push(event.data())
+                                        }
+                                    })
+                                })
+
+                                this.snapshotJourneys.then(data => {
+                                    data.forEach(journey => {
+                                        if (this.journeysName.includes(journey.id)) {
+                                            this.journeys.push(journey.data())
+                                        }
+                                    })
+                                })
+
                                 return
                             }
                         })
@@ -93,28 +130,13 @@
                 }
             }
 
-            setInterval(updateSubscriptions, 1000)
-
-            this.snapshotEvents.then(data => {
-                data.forEach(event => {
-                    if (this.eventsName.includes(event.id)) {
-                        this.events.push(event.data())
-                    }
-                })
-            })
-
-            this.snapshotJourneys.then(data => {
-                data.forEach(journey => {
-                    if (this.journeysName.includes(journey.id)) {
-                        this.journeys.push(journey.data())
-                    }
-                })
-            })
+            updateSubscriptions()
+            setInterval(updateSubscriptions, 3000)
 
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser
-                    
+
                     if(currentUser != null){
                         this.snapshotUsers.then(data => {
                             data.forEach(user1 => {

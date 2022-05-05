@@ -21,7 +21,7 @@
 
 <script>
     import { getAuth, updateEmail } from "firebase/auth"
-    import { doc, getFirestore, updateDoc } from "firebase/firestore"
+    import { collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore"
 
     export default {
         data() {
@@ -29,7 +29,8 @@
                 email: "",
                 oldEmail: "",
                 newEmail: "",
-                errMsg: ""
+                errMsg: "",
+                snapshotUsers: getDocs(collection(getFirestore(), "utenti"))
             }
         },
         methods: {
@@ -57,53 +58,53 @@
                 } else {
                     this.errMsg = "La vecchia email non corrisponde a quella attuale"
                 }
-            },
-            mounted() {
-                navigator.geolocation.watchPosition( 
-                    position => {
-                        var currentUser = getAuth().currentUser
-
-                        if (currentUser != null) {
-                            this.snapshotUsers.then(data => {
-                                data.forEach(user1 => {
-                                    var user = user1.data()
-                                    
-                                    if(currentUser.email === user.email){
-                                        //aggiorna nel database
-                                        const path = "utenti/" + user.username
-                                        const document = doc(getFirestore(), path)
-                                        const currentPosition = {
-                                            posizione: [position.coords.longitude, position.coords.latitude]
-                                        }
-                                        
-                                        updateDoc(document, currentPosition)
-                                    }
-                                })
-                            })   
-                        }
-
-                        this.center = [position.coords.longitude, position.coords.latitude]
-                    },
-                    error => { 
-                        console.log(error.message)
-                    }
-                )
-
-                /**
-                 * Ogni due secondi controlla se l'utente è loggato.
-                 * Se l'utente è loggato vengono mostrate tutte le pagine
-                 * tranne quella di login.
-                 */
-                let updateData = () => {
-                    var user = getAuth().currentUser
-
-                    if (user != null) {
-                        this.email = user.email
-                    }
-                }
-
-                setInterval(updateData, 1000)
             }
+        },
+        mounted() {
+            navigator.geolocation.watchPosition( 
+                position => {
+                    var currentUser = getAuth().currentUser
+
+                    if (currentUser != null) {
+                        this.snapshotUsers.then(data => {
+                            data.forEach(user1 => {
+                                var user = user1.data()
+                                
+                                if(currentUser.email === user.email){
+                                    //aggiorna nel database
+                                    const path = "utenti/" + user.username
+                                    const document = doc(getFirestore(), path)
+                                    const currentPosition = {
+                                        posizione: [position.coords.longitude, position.coords.latitude]
+                                    }
+                                    
+                                    updateDoc(document, currentPosition)
+                                }
+                            })
+                        })   
+                    }
+
+                    this.center = [position.coords.longitude, position.coords.latitude]
+                },
+                error => { 
+                    console.log(error.message)
+                }
+            )
+
+            /**
+             * Ogni due secondi controlla se l'utente è loggato.
+             * Se l'utente è loggato vengono mostrate tutte le pagine
+             * tranne quella di login.
+             */
+            let updateData = () => {
+                var user = getAuth().currentUser
+
+                if (user != null) {
+                    this.email = user.email
+                }
+            }
+
+            setInterval(updateData, 1000)
         }
     }
 </script>

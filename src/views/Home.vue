@@ -6,33 +6,34 @@
             <ol-source-osm />
         </ol-tile-layer>
 
+        <!-- Posizione dell'utente -->
         <ol-geolocation :projection="projection">
             <ol-vector-layer :zIndex="2">
                 <ol-source-vector>
                     <ol-feature ref="positionFeature">
                         <ol-geom-point :coordinates="center"></ol-geom-point>
-                        <ol-style>
-                            <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
-                        </ol-style>
                     </ol-feature>
+
+                    <ol-style>
+                        <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                    </ol-style>
                 </ol-source-vector>
             </ol-vector-layer>
         </ol-geolocation>
-
         
-        <!-- Raduni-->
+        <!-- Posizione dei raduni-->
         <ol-vector-layer>
-            <ol-source-vector>
-                <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
+            <ol-source-vector v-for="event, eventIndex in events" :key="eventIndex">
+                <ol-feature>
                     <ol-geom-point :coordinates="event[0]"></ol-geom-point>
-                    
-                    <ol-style>
-                        <ol-style-circle :radius="event[1] / 25">
-                            <ol-style-fill :color="fillColor"></ol-style-fill>
-                            <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
-                        </ol-style-circle>
-                    </ol-style>
                 </ol-feature>
+
+                <ol-style>
+                    <ol-style-circle :radius="event[1] / 25">
+                        <ol-style-fill :color="fillColor"></ol-style-fill>
+                        <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
+                    </ol-style-circle>
+                </ol-style>
             </ol-source-vector>
         </ol-vector-layer>
 
@@ -41,14 +42,11 @@
             <ol-source-vector>
                 <ol-feature v-for="warning, warningIndex in warningPoints" :key="warningIndex">
                     <ol-geom-point :coordinates="warning.punto_pericolo"></ol-geom-point>
-                    <ol-style>
-                        <ol-style-circle :radius="20">
-                            <ol-style-fill :color="fillColor"></ol-style-fill>
-                            <ol-style-stroke :color="strokeColor2" :width="strokeWidth"></ol-style-stroke>
-                        </ol-style-circle>
-                        <!--<ol-style-icon :src="warning" :scale="1"></ol-style-icon>-->
-                    </ol-style>
                 </ol-feature>
+
+                <ol-style>
+                    <ol-style-icon :src="warning" :scale="0.1"></ol-style-icon>
+                </ol-style>
             </ol-source-vector>
         </ol-vector-layer>
 
@@ -57,14 +55,11 @@
             <ol-source-vector>
                 <ol-feature v-for="interest, interestIndex in interestPoints" :key="interestIndex">
                     <ol-geom-point :coordinates="interest.punto_interesse"></ol-geom-point>
-                    <ol-style>
-                        <ol-style-circle :radius="30">
-                            <ol-style-fill :color="fillColor"></ol-style-fill>
-                            <ol-style-stroke :color="strokeColor3" :width="strokeWidth"></ol-style-stroke>
-                        </ol-style-circle>
-                        <!--<ol-style-icon :src="interest" :scale="1"></ol-style-icon>-->
-                    </ol-style>
                 </ol-feature>
+
+                <ol-style>
+                    <ol-style-icon :src="interest" :scale="0.1"></ol-style-icon>
+                </ol-style>
             </ol-source-vector>
         </ol-vector-layer>
     </ol-map>
@@ -131,22 +126,8 @@
                 })
             })
 
-
-/*
-            map.on("moveend", function() {
-                    var zoom = map.getView().getZoom(); 
-                    var zoomInfo = 'Zoom level = ' + zoom;
-                    document.getElementById('zoomlevel').innerHTML = zoomInfo;
-                    console.log(ZoomInfo);
-            });
-*/
             navigator.geolocation.watchPosition( 
-                position => {
-                    //this.zoom++
-            
-            
-
-                    
+                position => {        
                     var currentUser = getAuth().currentUser
                     
                     if(currentUser != null){

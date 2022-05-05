@@ -163,8 +163,6 @@
                                     var feature = new Feature(line)
                                     var flatCoordinates = feature.getGeometry().getCoordinates()
 
-                                    console.log(flatCoordinates)
-
                                     flatCoordinates.forEach(flat => {
                                         this.middlePositions.push(this.meters2degress(flat[0], flat[1]))
                                     })
