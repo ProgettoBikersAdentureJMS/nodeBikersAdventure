@@ -1,6 +1,6 @@
 <template>
     <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" style="height:90vh">
-        <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" 
+        <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom"
         :projection="projection" />
         <ol-tile-layer>
             <ol-source-osm />
@@ -19,13 +19,15 @@
             </ol-vector-layer>
         </ol-geolocation>
 
-        <!-- Raduni -->
+        
+        <!-- Raduni-->
         <ol-vector-layer>
             <ol-source-vector>
                 <ol-feature v-for="event, eventIndex in events" :key="eventIndex">
-                    <ol-geom-point :coordinates="event.coordinates"></ol-geom-point>
+                    <ol-geom-point :coordinates="event[0]"></ol-geom-point>
+                    
                     <ol-style>
-                        <ol-style-circle :radius="event.followers / 25">
+                        <ol-style-circle :radius="event[1] / 25">
                             <ol-style-fill :color="fillColor"></ol-style-fill>
                             <ol-style-stroke :color="strokeColor" :width="strokeWidth"></ol-style-stroke>
                         </ol-style-circle>
@@ -120,10 +122,7 @@
                     var date2 = new Date(eventData.chiusura_iscrizione)
                     var nrPartecipantiEvent = eventData.partecipanti.length
                     var posizione = new Array(eventData.ritrovo)
-                    var event = [
-                        followers => nrPartecipantiEvent, 
-                        coordinates => posizione
-                    ]
+                    var event = [nrPartecipantiEvent, posizione]
                     
 
                     if (date2 > date1) {
@@ -131,6 +130,7 @@
                     }
                 })
             })
+
 
 /*
             map.on("moveend", function() {
@@ -143,8 +143,10 @@
             navigator.geolocation.watchPosition( 
                 position => {
                     //this.zoom++
-                    
+            
+            
 
+                    
                     var currentUser = getAuth().currentUser
                     
                     if(currentUser != null){

@@ -2,25 +2,21 @@
     <div>
         <ListModels @getTemplate="getTemplate" />
         <div style="margin-left: 20%; margin-right: 20%">
-            <div style="width: 50vh; float: left">
-                <div id="title-content">
+            <div style="width: fit-content; margin: auto">
+                <form id="create-event-data" @submit.prevent="organizeJourney">
                     <h3>Titolo: <span class="required">*</span></h3>
+                    <input type="text" v-model="title" required>
                     <h3>Data/Ora partenza: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="start" required>
                     <h3>Data/Ora arrivo: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="end" required>
                     <h3>Data/Ora chiusura iscrizione: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="closeSubscriptionDate" required>
                     <h3>Privato:</h3>
                     <label class="switch">
-                    <input type="checkbox" @change="switchPrivacy($event)">
-                    <span class="slider round"></span>
+                        <input type="checkbox" @change="switchPrivacy($event)">
+                        <span class="slider round"></span>
                     </label>
-                </div>
-            </div>
-            <div style="width: 50vh; float: right">
-                <form id="create-event-data" @submit.prevent="organizeJourney">
-                    <input type="text" v-model="title" required>
-                    <input type="datetime-local" v-model="start" required>
-                    <input type="datetime-local" v-model="end" required>
-                    <input type="datetime-local" v-model="closeSubscriptionDate" required>
                     <div id="passwordJourney" style="display: none">
                         <input type="password" placeholder="Password" v-model="password">
                         <input type="password" placeholder="Conferma password" v-model="confirmPassword">
@@ -37,6 +33,7 @@
                 <ol-source-osm />
             </ol-tile-layer>
 
+            <!-- Punto di partenza -->
             <ol-vector-layer>
                 <ol-source-vector>
                     <ol-feature>
@@ -49,6 +46,7 @@
                 </ol-style>
             </ol-vector-layer>
 
+            <!-- Punto di arrivo -->
             <ol-vector-layer>
                 <ol-source-vector>
                     <ol-feature>
@@ -61,6 +59,7 @@
                 </ol-style>
             </ol-vector-layer>
 
+            <!-- Punti intermedi -->
             <ol-vector-layer v-for="middlePoint,itemIndex in middlePositions" :key="itemIndex">
                 <ol-source-vector>
                     <ol-feature>
@@ -69,7 +68,7 @@
                 </ol-source-vector>
 
                 <ol-style>
-                    <ol-style-icon :src="ping" :scale="1"></ol-style-icon>
+                    <ol-style-icon :src="dot" :scale="0.1"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
         </ol-map>
@@ -84,7 +83,7 @@
     import ListModels from "./ListModels.vue"
     import start from "../assets/start.png"
     import arrive from "../assets/arrive.png"
-    import ping from "../assets/ping.png"
+    import dot from "../assets/dot.png"
 
     export default {
         components: {
@@ -113,52 +112,45 @@
                 templateId: null,
                 start,
                 arrive,
-                ping
+                dot
             }
         },
         methods: {
+            /**
+             * Questo metodo prende l'id del template, prende i dati da firebase
+             * e imposta le coordinate sulla mappa in base al template.
+             * In seguito questo metodo crea il tracciato da seguire in base
+             * grazie ad una chiamata all'API di project-osrm.org.
+             */
             getTemplate(value) {
                 this.templateId = value
 
                 this.snapshotTemplates.then(data => {
                     data.forEach(model => {
-                        // get data
                         var modelData = model.data()
 
                         if (modelData.nome == this.templateId) {
-                            // set starting point and center
                             this.positionStart = modelData.partenza
                             this.center = this.positionStart
-
-                            console.log(modelData.partenza)
-                            console.log(this.positionStart)
-
-                            // set arrive point
                             this.positionArrive = modelData.arrivo
-                            
-                            // set middle points
                             modelData.intermedi.forEach(middle => {
-                                console.log(middle)
+                                middle = middle.coordsLonLat
                                 this.middlePositions.push([middle[0], middle[1]])
-                                console.log(this.middlePositions)
                             })
 
-                            // create route to follow
+                            // Crea il percorso da seguire
                             var route = "http://router.project-osrm.org/route/v1/driving/"
                             route += this.positionStart + ";"
-
-                            //console.log(this.middlePositions)
 
                             this.middlePositions.forEach(middle => {
                                 route += middle.toString() + ";"
                             })
+
                             route += this.positionArrive
                             route += "?steps=true"
 
-                            //console.log(route)
-
-                            // get route to follow
-                            /*fetch()
+                            // Ottiene il percorso da seguire
+                            fetch(route)
                                 // Legge il polyline: https://jsfiddle.net/jonataswalker/079xha47/        
                                 .then(response => response.json())
                                 .then(data => {
@@ -171,23 +163,27 @@
                                     var feature = new Feature(line)
                                     var flatCoordinates = feature.getGeometry().getCoordinates()
 
+                                    console.log(flatCoordinates)
+
                                     flatCoordinates.forEach(flat => {
                                         this.middlePositions.push(this.meters2degress(flat[0], flat[1]))
                                     })
                                 })
                                 .catch(error => {
                                     console.log(error)
-                                })*/
-
-                            return
+                                })
                         }
                     })
                 })
             },
+            /**
+             * Questo metodo trasforma le coordinte flat in coordinate 
+             * composte da latitudine e longitudine.
+             */
             meters2degress(x,y) {
-                var lon = x *  180 / 20037508.34 ;
-                //thanks magichim @ github for the correction
-                var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90; 
+                var lon = x *  180 / 20037508.34
+                var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90
+
                 return [lon, lat]
             },
             switchPrivacy(event) {
@@ -198,28 +194,28 @@
                 }
             },
             organizeJourney() {
-                //controllo vari errori
-                //se non sono stati inseriti nome o descrizione
+                // Controllo vari errori
+                // Se non sono stati inseriti nome o descrizione
                 if(this.title === ""){
                     this.errorMsg = "Inserire un titolo per il tragitto"
                     return
-                //se le date non sono state inserite
+                // Se le date non sono state inserite
                 }else if(this.start === "" || this.end === "" || this.closeSubscriptionDate === ""){
                     this.errorMsg = "Se il pericolo è temporaneo, è obbligatorio inserire due date valide"
                     return
-                //se la fine è prima dell'inizio    
+                // Se la fine è prima dell'inizio    
                 }else if(this.start > this.end){
                     this.errorMsg = "La data di fine deve essere maggiore di quella di inizio"
                     return
-                //Se l'inizio è prima della data corrente
+                // Se l'inizio è prima della data corrente
                 }else if((new Date()) > new Date(this.end)){
                     this.errorMsg = "La data di inizio non può essere già passata"
                     return
-                //Se la chiusura è prima della data corrente
+                // Se la chiusura è prima della data corrente
                 }else if((new Date()) > new Date(this.closeSubscriptionDate)){
                     this.errorMsg = "La data di chiusura delle iscrizioni non può essere già passata"
                     return
-                //Se la fine è prima della data corrente
+                // Se la fine è prima della data corrente
                 }else if((new Date()) > new Date(this.end)){
                     this.errorMsg = "La data di fine non può essere già passata"
                     return

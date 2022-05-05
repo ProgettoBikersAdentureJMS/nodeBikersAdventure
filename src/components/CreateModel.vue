@@ -43,16 +43,14 @@
                 </ol-style>
             </ol-vector-layer>
         </ol-map>
-        <div>
+        <div style="width: 70%; margin: auto">
             <h3>Nome:</h3>
+            <input type="text" v-model="name">
             <h3>Privato:</h3>
             <label class="switch">
                 <input type="checkbox" @change="switchPrivacy($event)">
                 <span class="slider round"></span>
             </label>
-        </div>
-        <div>
-            <input type="text" v-model="name">
             <div id="password" style="display: none">
                 <input type="password" placeholder="Password" v-model="password">
                 <input type="password" placeholder="Conferma password" v-model="confirmPassword">

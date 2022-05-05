@@ -1,12 +1,11 @@
 <template>
     <div>
-        <h1>Profile</h1>
-        <button @click="getData">Data</button>
+        <h1>Profilo</h1>
         <p>E-Mail: {{ email }}</p>
         <button @click="logOut">ESCI</button>
         <hr>
         <h3>Modifica email</h3>
-        <form id="changePassword" @submit.prevent="changePassword">
+        <form id="changePassword" @submit.prevent="changeEmail">
             <input type="text" v-model="oldEmail" placeholder="Vecchia email" required>
             <br>
             <br>
@@ -34,18 +33,17 @@
             }
         },
         methods: {
-            getData() {
-                if (getAuth().currentUser != null) {
-                    this.email = getAuth().currentUser.email
-                }
-            },
+            /**
+             * Questo metodo esegue il logout dall'utente di firebase e
+             * e reindirizza alla home.
+             */
             logOut() {
                 getAuth().signOut()
                 .then(() => {
                     this.$router.push("/")
                 })
             },
-            changePassword() {
+            changeEmail() {
                 if (this.oldEmail == this.email) {
                     if (this.oldEmail != this.newEmail) {
                         updateEmail(getAuth(), this.newEmail)
@@ -64,10 +62,12 @@
                 navigator.geolocation.watchPosition( 
                     position => {
                         var currentUser = getAuth().currentUser
-                        if(currentUser != null){
+
+                        if (currentUser != null) {
                             this.snapshotUsers.then(data => {
                                 data.forEach(user1 => {
                                     var user = user1.data()
+                                    
                                     if(currentUser.email === user.email){
                                         //aggiorna nel database
                                         const path = "utenti/" + user.username
@@ -75,19 +75,34 @@
                                         const currentPosition = {
                                             posizione: [position.coords.longitude, position.coords.latitude]
                                         }
+                                        
                                         updateDoc(document, currentPosition)
                                     }
                                 })
-                            })
-                            
+                            })   
                         }
+
                         this.center = [position.coords.longitude, position.coords.latitude]
-                        console.log(this.center)
                     },
                     error => { 
                         console.log(error.message)
                     }
                 )
+
+                /**
+                 * Ogni due secondi controlla se l'utente è loggato.
+                 * Se l'utente è loggato vengono mostrate tutte le pagine
+                 * tranne quella di login.
+                 */
+                let updateData = () => {
+                    var user = getAuth().currentUser
+
+                    if (user != null) {
+                        this.email = user.email
+                    }
+                }
+
+                setInterval(updateData, 1000)
             }
         }
     }

@@ -20,25 +20,21 @@
     <div>
         <button @click="enableSelect">Punto di ritrovo</button>
         <div style="margin-left: 20%; margin-right: 20%">
-            <div style="width: 50vh; float: left">
-                <div id="title-content">
+            <div style="width: fit-content; margin: auto">
+                <form id="create-event-data" @submit.prevent="createEvent">
                     <h3>Titolo: <span class="required">*</span></h3>
+                    <input type="text" v-model="title" required>
                     <h3>Data/Ora inizio: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="start" required>
                     <h3>Data/Ora termine: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="end" required>
                     <h3>Data/Ora chiusura iscrizione: <span class="required">*</span></h3>
+                    <input type="datetime-local" v-model="closeSubscriptionDate" required>
                     <h3>Privato:</h3>
                     <label class="switch">
                     <input type="checkbox" @change="switchPrivacy($event)">
                     <span class="slider round"></span>
                     </label>
-                </div>
-            </div>
-            <div style="width: 50vh; float: right">
-                <form id="create-event-data" @submit.prevent="createEvent">
-                    <input type="text" v-model="title" required>
-                    <input type="datetime-local" v-model="start" required>
-                    <input type="datetime-local" v-model="end" required>
-                    <input type="datetime-local" v-model="closeSubscriptionDate" required>
                     <div id="password" style="display: none">
                         <input type="password" placeholder="Password" v-model="password">
                         <input type="password" placeholder="Conferma password" v-model="confirmPassword">

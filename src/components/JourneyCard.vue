@@ -1,5 +1,5 @@
 <template>
-    <div id="event">
+    <div id="journey-card">
         <h1>{{ title }}</h1>
         <div>
             <p>Inizia: {{ formatDate(start) }}</p>
@@ -47,7 +47,7 @@
 </script>
 
 <style>
-    #event {
+    #journey-card {
         background: black;
         color: white;
         display: inline-block;
@@ -57,7 +57,7 @@
     }
 
     @media only screen and (max-width: 400px) {
-        #event {
+        #journey-card {
             display: block;
             width: 80%;
             margin: auto;

@@ -132,4 +132,14 @@
     #error {
         color: red;
     }
+
+    @media only screen and (max-width: 400px) {
+        #register {
+            width: 40%;
+            padding-left: 60px;
+            padding-right: 60px;
+            padding-bottom: 30px;
+            padding-top: 30px;
+        }
+    }
 </style>

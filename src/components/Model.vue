@@ -43,4 +43,14 @@
         width: 90%;
         padding: 10px;
     }
+
+    @media only screen and (max-width: 400px) {
+        #model {
+            display: block;
+            width: 80%;
+            margin: auto 20;
+            height: fit-content;
+            padding: 5px;
+        }
+    }
 </style>

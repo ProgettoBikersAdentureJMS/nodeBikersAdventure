@@ -52,32 +52,48 @@
                     }    
                 })
                 this.setMap = true
+            },
+            resetData() {
+                this.events = []
+                this.eventsName = []
+                this.journeys = []
+                this.journeysName = []
             }
         },
         mounted() {
-            //var currentEmail = getAuth().currentUser.email
-            var currentEmail = "banfisamuel.scuola@gmail.com"
+            /**
+             * Questo metodo controlla ogni secondo che vengano mostrate tutte
+             * le iscrizioni dell'utente.
+             */
+            let updateSubscriptions = () => {
+                var user = getAuth().currentUser
 
-            this.snapshotUsers.then(data => {
-                data.forEach(user => {
-                    var email = user.data().email
+                if (user != null) {
+                    var currentEmail = getAuth().currentUser.email
 
-                    if (email == currentEmail) {
-                        this.user = user
+                    this.snapshotUsers.then(data => {
+                        data.forEach(user => {
+                            var email = user.data().email
 
-                        console.log(user.data().raduni)
-                        user.data().raduni.forEach(eventName => {
-                            this.eventsName.push(eventName)
+                            if (email == currentEmail) {
+                                this.user = user
+
+                                user.data().raduni.forEach(eventName => {
+                                    this.eventsName.push(eventName)
+                                })
+
+                                user.data().tragitti.forEach(journeyName => {
+                                    this.journeysName.push(journeyName)
+                                })
+
+                                return
+                            }
                         })
+                    })
+                }
+            }
 
-                        user.data().tragitti.forEach(journeyName => {
-                            this.journeysName.push(journeyName)
-                        })
-
-                        return
-                    }
-                })
-            })
+            setInterval(updateSubscriptions, 1000)
 
             this.snapshotEvents.then(data => {
                 data.forEach(event => {
@@ -95,7 +111,6 @@
                 })
             })
 
-            // Get the current user position
             navigator.geolocation.watchPosition( 
                 position => {
                     var currentUser = getAuth().currentUser

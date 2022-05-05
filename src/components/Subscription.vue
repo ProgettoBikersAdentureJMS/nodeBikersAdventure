@@ -57,8 +57,17 @@
         color: white;
         display: inline-block;
         padding: 20px;
-        margin: 20px;
         border-radius: 10px;
         width: 20%;
+    }
+
+    @media only screen and (max-width: 400px) {
+        #my-event {
+            display: block;
+            width: 80%;
+            margin: auto;
+            height: fit-content;
+            padding: 5px;
+        }
     }
 </style>
